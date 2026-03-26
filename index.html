@@ -99,7 +99,7 @@
       backdrop-filter: blur(4px);
     }
     .card-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; letter-spacing: 0.02em; }
-    .card p, .card li { font-size: 14px; line-height: 1.75; color: var(--text-secondary); margin-bottom: 4px; }
+    .card p, .card li { font-size: 14px; line-height: 1.75; color: var(--text-secondary); margin-bottom: 4px; word-break: keep-all; }
     .card ul { padding-left: 0; list-style: none; }
     .card li::before { content: ''; display: none; }
     .card--wide { grid-column: 1 / -1; }
@@ -188,10 +188,14 @@
     }
 
     /* ── Paradigm flow (vertical) ── */
-    .paradigm-flow { display: flex; flex-direction: column; gap: 0; margin-top: 24px; }
-    .paradigm-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; }
-    .paradigm-label { font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 6px; min-width: 60px; text-align: center; }
-    .paradigm-down-arrow { font-size: 24px; padding-left: 26px; opacity: 0; color: var(--vscode-teal); }
+    .paradigm-flow { display: flex; flex-direction: column; gap: 0; margin-top: 24px; width: 100%; }
+    .paradigm-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; width: 100%; }
+    .paradigm-row .flow-diagram { flex: 1; justify-content: flex-start; margin-top: 0; }
+    .paradigm-row .flow-box { flex: 1; }
+    .paradigm-label { font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 6px; min-width: 60px; text-align: center; flex-shrink: 0; }
+    .paradigm-down-arrow { font-size: 18px; width: 60px; opacity: 0; color: var(--vscode-teal); text-align: center; }
+    .flow-diagram { gap: 12px; }
+    .flow-arrow { padding: 0 4px; }
     .slide.active .paradigm-down-arrow { animation: downArrowPulse 2s ease-in-out infinite; }
     @keyframes downArrowPulse {
       0%, 100% { opacity: 0.2; transform: translateY(-4px); }
@@ -243,6 +247,23 @@
     .step-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; }
     .step-desc { font-size: 13px; color: var(--text-secondary); }
 
+    /* ── Highlight animation ── */
+    @keyframes textHighlight {
+      0% { background-size: 0% 100%; }
+      100% { background-size: 100% 100%; }
+    }
+    .highlight-anim {
+      background-repeat: no-repeat; background-position: left center;
+      background-size: 0% 100%; padding: 2px 6px; border-radius: 4px;
+      -webkit-background-clip: initial; background-clip: initial;
+    }
+    .slide.active .highlight-anim {
+      animation: textHighlight 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+    .slide.active .step:nth-child(1) .highlight-anim { animation-delay: 0.5s; }
+    .slide.active .step:nth-child(2) .highlight-anim { animation-delay: 1.0s; }
+    .slide.active .step:nth-child(3) .highlight-anim { animation-delay: 1.5s; }
+
     /* ── Evolution stages ── */
     .evo-stages { display: flex; flex-direction: column; gap: 0; margin-top: 24px; }
     .evo-stage { display: flex; align-items: center; gap: 16px; padding: 18px 20px; border-radius: 10px; }
@@ -268,6 +289,55 @@
       font-size: 12px; font-weight: 700; color: #fff;
     }
     .slide.active .h-bar-fill { width: var(--target-width); }
+
+    /* ── Donut Chart ── */
+    @property --donut-reveal {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+    .donut-wrap { position: relative; width: 100%; max-width: 750px; height: 380px; margin: 12px auto 0; }
+    .donut-chart {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 280px; height: 280px; border-radius: 50%;
+      background: conic-gradient(
+        #10a37f 0deg 216deg,
+        #4285f4 216deg 273.6deg,
+        #7b83eb 273.6deg 316.8deg,
+        #d19a66 316.8deg 327.6deg,
+        #4ec9b0 327.6deg 338.4deg,
+        rgba(255,255,255,0.18) 338.4deg 360deg
+      );
+      --donut-reveal: 0deg;
+      -webkit-mask: conic-gradient(#000 0deg var(--donut-reveal), transparent var(--donut-reveal));
+      mask: conic-gradient(#000 0deg var(--donut-reveal), transparent var(--donut-reveal));
+      opacity: 0;
+      transition: --donut-reveal 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.4s ease;
+    }
+    .slide.active .donut-chart { --donut-reveal: 360deg; opacity: 1; }
+    .donut-chart::after {
+      content: ''; position: absolute; inset: 32%; border-radius: 50%;
+      background: #1a0f2e;
+    }
+    .donut-label {
+      position: absolute; display: flex; align-items: center; gap: 6px;
+      white-space: nowrap; font-size: 13px; color: var(--text-primary);
+      opacity: 0; transition: opacity 0.4s ease;
+    }
+    .slide.active .donut-label { opacity: 1; }
+    .slide.active .donut-label:nth-child(2) { transition-delay: 0.5s; }
+    .slide.active .donut-label:nth-child(3) { transition-delay: 0.9s; }
+    .slide.active .donut-label:nth-child(4) { transition-delay: 1.1s; }
+    .slide.active .donut-label:nth-child(5) { transition-delay: 1.3s; }
+    .slide.active .donut-label:nth-child(6) { transition-delay: 1.4s; }
+    .slide.active .donut-label:nth-child(7) { transition-delay: 1.5s; }
+    .donut-label-logo { width: 18px; height: 18px; flex-shrink: 0; display: flex; align-items: center; }
+    .donut-label-logo svg { width: 100%; height: 100%; }
+    .donut-label-name { font-weight: 600; font-size: 14px; }
+    .donut-label-pct { font-weight: 800; font-size: 15px; color: #fff; }
+    .donut-label-line {
+      position: absolute; background: rgba(255,255,255,0.25); border-radius: 1px;
+    }
 
     /* ── Growth cards ── */
     .growth-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
@@ -411,27 +481,27 @@
             <div class="step-num" style="background: rgba(55,148,255,0.15); color: var(--vscode-blue-bright);">In</div>
             <div class="step-content">
               <div class="step-title">Intro</div>
-              <div class="step-desc">비개발자가 해커톤 1위를?</div>
+              <div class="step-desc">비개발자의 해커톤 우승</div>
             </div>
           </div>
           <div class="step" style="border-left: 3px solid var(--vscode-purple);">
             <div class="step-num" style="background: rgba(197,134,192,0.15); color: var(--vscode-purple);">1</div>
             <div class="step-content">
               <div class="step-title">Chapter 1 — AI 에이전트 트렌드</div>
-              <div class="step-desc">에이전트 정의 · AI 경쟁 구도 · 시장 성장성 · OpenClaw의 등장 · Amazon · DHL</div>
+              <div class="step-desc">AI 에이전트 정의 · 시장 전망 · OpenClaw의 등장</div>
             </div>
           </div>
           <div class="step" style="border-left: 3px solid var(--vscode-green);">
             <div class="step-num" style="background: rgba(106,153,85,0.15); color: var(--vscode-green);">2</div>
             <div class="step-content">
               <div class="step-title">Chapter 2 — GPT+VBA를 활용한 업무 자동화</div>
-              <div class="step-desc">VBA 소개 · 모듈화 · Step 1~4 실전 · 프롬프트 원칙 · 유의사항</div>
+              <div class="step-desc">VBA 소개 · 모듈화와 실전 프롬프트 · 유의사항</div>
             </div>
           </div>
           <div class="step" style="border-left: 3px solid var(--vscode-teal);">
             <div class="step-num" style="background: rgba(78,201,176,0.15); color: var(--vscode-teal);">3</div>
             <div class="step-content">
-              <div class="step-title">Chapter 3 — 마무리</div>
+              <div class="step-title">Outro</div>
               <div class="step-desc">시사점 · AGENTIC ENGINEER</div>
             </div>
           </div>
@@ -445,9 +515,9 @@
       <div class="bg-grid"></div>
       <div class="slide-content">
         <p class="tag tag-blue appear">INTRO</p>
-        <h2 class="appear">핵심은 코드의 우아함이 아니라<br><span class="accent-blue">문제 해결력 </span></h2>
+        <h2 class="appear">핵심은 코드 실력이 아닌<br><span class="accent-blue">문제해결 능력 </span></h2>
         <div class="stats-row appear">
-          <div class="stats-item">
+          <div class="stats-item">  
             <div class="stat accent-blue count-up" data-target="13000">0</div>
             <div class="stat-label">해커톤 지원자</div>
           </div>
@@ -475,7 +545,7 @@
           </div>
         </div>
         <div class="emphasis-box appear" style="border-left-color: var(--vscode-teal); margin-top: 16px;">
-          <p style="font-size: 18px;">"이제는 악기가 없어도 <span class="accent-teal">작곡할 수 있는 시대</span>."</p>
+          <p style="font-size: 18px;">비유하면 이제는 악기를 다루지 못해도 <span class="accent-teal">작곡할 수 있는 시대</span>.</p>
         </div>
       </div>
     </section>
@@ -504,7 +574,7 @@
           </div>
         </div>
         <div class="emphasis-box appear" style="border-left-color: var(--vscode-purple); margin-top: 16px;">
-          <p style="font-size: 16px;">챗봇은 질문에 답하는 <span class="accent-purple">비서</span>, AI 에이전트는 스스로 판단하고 실행하는 <span class="accent-purple">직원</span></p>
+          <p style="font-size: 16px;">챗봇은 질문에만 답하는 <span class="accent-purple">비서</span> / AI 에이전트는 스스로 판단하고 실행하는 <span class="accent-purple">직원</span></p>
         </div>
       </div>
     </section>
@@ -514,37 +584,49 @@
       <div class="bg-grid"></div>
       <div class="slide-content wide">
         <p class="tag tag-purple appear"><span class="chapter-badge" style="background: rgba(197,134,192,0.2); color: var(--vscode-purple);">CH.1</span> AI LANDSCAPE</p>
-        <h2 class="appear">AI모델 경쟁구도: <span class="accent-purple">점유율</span></h2>
-        <div class="h-bar-chart appear">
-          <div class="h-bar-row">
-            <div class="h-bar-label">ChatGPT</div>
-            <div class="h-bar-track">
-              <div class="h-bar-fill" style="--target-width: 100%; background: linear-gradient(90deg, #10a37f, #1a8870);">~64%</div>
-            </div>
+        <h2 class="appear">AI모델 경쟁구도 : <span class="accent-purple">Market Share</span></h2>
+        <div class="donut-wrap appear">
+          <div class="donut-chart"></div>
+          <!-- ChatGPT: mid 108° → right side -->
+          <div class="donut-label" style="top: 52%; left: 68%;">
+            <span class="donut-label-line" style="width: 32px; height: 1.5px; position: relative; left: -4px;"></span>
+            <span class="donut-label-logo"><svg viewBox="0 0 24 24" fill="none"><path d="M22.28 9.37a5.93 5.93 0 0 0-.51-4.87 6 6 0 0 0-6.47-2.87A5.93 5.93 0 0 0 10.82.02a6 6 0 0 0-5.73 4.15 5.93 5.93 0 0 0-3.97 2.87 6 6 0 0 0 .74 7.03 5.93 5.93 0 0 0 .51 4.87 6 6 0 0 0 6.47 2.87 5.93 5.93 0 0 0 4.48 1.62 6 6 0 0 0 5.73-4.15 5.93 5.93 0 0 0 3.97-2.87 6 6 0 0 0-.74-7.03z" fill="#10a37f"/></svg></span>
+            <span class="donut-label-name" style="color: #10a37f;">ChatGPT</span>
+            <span class="donut-label-pct" style="color: #4aedc4;">60%</span>
           </div>
-          <div class="h-bar-row">
-            <div class="h-bar-label">Gemini</div>
-            <div class="h-bar-track">
-              <div class="h-bar-fill" style="--target-width: 28%; background: linear-gradient(90deg, #4285f4, #3b78e7);">~18%</div>
-            </div>
+          <!-- Gemini: mid 245° → bottom-left -->
+          <div class="donut-label" style="top: 72%; left: 6%; flex-direction: row-reverse;">
+            <span class="donut-label-line" style="width: 28px; height: 1.5px; position: relative; right: -4px;"></span>
+            <span class="donut-label-pct" style="color: #79aff7;">16%</span>
+            <span class="donut-label-name" style="color: #4285f4;">Gemini</span>
+            <span class="donut-label-logo"><svg viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18A10.96 10.96 0 0 0 1 12c0 1.77.42 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg></span>
           </div>
-          <div class="h-bar-row">
-            <div class="h-bar-label">Copilot</div>
-            <div class="h-bar-track">
-              <div class="h-bar-fill" style="--target-width: 22%; background: linear-gradient(90deg, #7b83eb, #6c72c4);">~14%</div>
-            </div>
+          <!-- Copilot: mid 295° → left -->
+          <div class="donut-label" style="top: 38%; left: 3%; flex-direction: row-reverse;">
+            <span class="donut-label-line" style="width: 24px; height: 1.5px; position: relative; right: -4px;"></span>
+            <span class="donut-label-pct" style="color: #a8aef0;">12%</span>
+            <span class="donut-label-name" style="color: #7b83eb;">Copilot</span>
+            <span class="donut-label-logo"><svg viewBox="0 0 24 24" fill="none"><rect x="1" y="1" width="10" height="10" fill="#f25022"/><rect x="13" y="1" width="10" height="10" fill="#7fba00"/><rect x="1" y="13" width="10" height="10" fill="#00a4ef"/><rect x="13" y="13" width="10" height="10" fill="#ffb900"/></svg></span>
           </div>
-          <div class="h-bar-row">
-            <div class="h-bar-label">Claude</div>
-            <div class="h-bar-track">
-              <div class="h-bar-fill" style="--target-width: 5%; background: linear-gradient(90deg, var(--vscode-orange), #b87a60);">~2%</div>
-            </div>
+          <!-- Claude: mid 322° → upper-left -->
+          <div class="donut-label" style="top: 15%; left: 8%; flex-direction: row-reverse;">
+            <span class="donut-label-line" style="width: 20px; height: 1.5px; position: relative; right: -4px;"></span>
+            <span class="donut-label-pct" style="color: #e8be8a;">3%</span>
+            <span class="donut-label-name" style="color: #d19a66;">Claude</span>
+            <span class="donut-label-logo"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2L2 19.5h20L12 2z" fill="none" stroke="#d19a66" stroke-width="2.5" stroke-linejoin="round"/><circle cx="12" cy="14" r="2.5" fill="#d19a66"/></svg></span>
           </div>
-          <div class="h-bar-row">
-            <div class="h-bar-label">Perplexity</div>
-            <div class="h-bar-track">
-              <div class="h-bar-fill" style="--target-width: 5%; background: linear-gradient(90deg, var(--vscode-teal), #3aaa96);">~2%</div>
-            </div>
+          <!-- Perplexity: mid 333° → top-left -->
+          <div class="donut-label" style="top: 3%; left: 18%; flex-direction: row-reverse;">
+            <span class="donut-label-line" style="width: 20px; height: 1.5px; position: relative; right: -4px;"></span>
+            <span class="donut-label-pct" style="color: #7ee0cc;">3%</span>
+            <span class="donut-label-name" style="color: #4ec9b0;">Perplexity</span>
+            <span class="donut-label-logo"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="#4ec9b0" stroke-width="2" fill="none"/><path d="M8 12h8M12 8v8" stroke="#4ec9b0" stroke-width="2" stroke-linecap="round"/></svg></span>
+          </div>
+          <!-- ETC: mid 349° → top -->
+          <div class="donut-label" style="top: -2%; left: 42%;">
+            <span class="donut-label-line" style="width: 16px; height: 1.5px; position: relative; left: -4px;"></span>
+            <span class="donut-label-name" style="color: rgba(255,255,255,0.4); font-size: 12px;">기타</span>
+            <span class="donut-label-pct" style="color: rgba(255,255,255,0.35); font-size: 13px;">6%</span>
           </div>
         </div>
         <p class="appear" style="font-size: 13px; margin-top: 16px;">📈 YoY 성장: ChatGPT <span class="accent-blue">+180%</span> · Gemini <span class="accent-blue">+170%</span> · Claude <span class="accent-purple">+190%</span>
@@ -584,16 +666,16 @@
       </div>
     </section>
 
-    <!-- ====== SLIDE 7: OPENCLAW ====== -->
+    <!-- ====== SLIDE 7: OPENCLAW + PARADIGM SHIFT ====== -->
     <section class="slide slide--purple">
       <div class="bg-glow" style="top: -100px; right: -100px; background: var(--vscode-yellow); opacity: 0.08;"></div>
       <div class="bg-grid"></div>
-      <div class="slide-content">
-        <p class="tag tag-purple appear"><span class="chapter-badge" style="background: rgba(197,134,192,0.2); color: var(--vscode-purple);">CH.1</span> OPENCLAW</p>
-        <h2 class="appear">OpenClaw의 <span class="accent-yellow">광폭행보</span></h2>
-        <p class="appear" style="font-size: 15px;">LLM에 컴퓨터를 통째로 연결 — WhatsApp으로 문자 보내면 컴퓨터가 실제로 작업 실행</p>
-        <div class="github-compare appear">
-          <p style="font-size: 14px; font-weight: 700; margin-bottom: 8px;">⭐ GitHub Stars 비교</p>
+      <div class="slide-content wide">
+        <p class="tag tag-purple appear"><span class="chapter-badge" style="background: rgba(197,134,192,0.2); color: var(--vscode-purple);">CH.1</span> PARADIGM</p>
+        <h2 class="appear">OpenClaw가 보여주는 <span class="accent-purple">패러다임 전환</span></h2>
+        <p class="appear" style="font-size: 14px; margin-bottom: 4px;">LLM에 컴퓨터를 통째로 연결 — WhatsApp으로 문자 보내면 컴퓨터가 실제로 작업 실행</p>
+        <div class="github-compare appear" style="margin-bottom: 16px;">
+          <p style="font-size: 13px; font-weight: 700; margin-bottom: 6px;">⭐ GitHub Stars 비교</p>
           <div class="gh-row">
             <div class="gh-name accent-yellow">OpenClaw</div>
             <div class="gh-bar-wrap">
@@ -609,15 +691,8 @@
             <div class="gh-time">10년+</div>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- ====== SLIDE 8: PARADIGM SHIFT ====== -->
-    <section class="slide slide--purple">
-      <div class="bg-grid"></div>
-      <div class="slide-content">
-        <p class="tag tag-purple appear"><span class="chapter-badge" style="background: rgba(197,134,192,0.2); color: var(--vscode-purple);">CH.1</span> PARADIGM</p>
-        <h2 class="appear">OpenClaw가 보여주는 <span class="accent-purple">패러다임 전환</span></h2>
+        <hr class="appear" style="border: none; height: 1px; background: rgba(255,255,255,0.08); margin: 0;">
+        <p class="appear" style="font-size: 20px; font-weight: 700; margin-bottom: -12px; margin-top: 12px;">AI가 바꿀 업무 방식</p>
         <div class="paradigm-flow appear">
           <div class="paradigm-row">
             <div class="paradigm-label" style="background: rgba(255,255,255,0.08); color: var(--text-secondary);">기존</div>
@@ -625,9 +700,11 @@
               <div class="flow-box">사람</div>
               <div class="flow-arrow">→</div>
               <div class="flow-box">컴퓨터 (직접 조작)</div>
+              <div class="flow-arrow" style="visibility: hidden;">→</div>
+              <div class="flow-box" style="visibility: hidden;">placeholder</div>
             </div>
           </div>
-          <div class="paradigm-down-arrow">↓</div>
+          <div class="paradigm-down-arrow">▼</div>
           <div class="paradigm-row">
             <div class="paradigm-label" style="background: rgba(55,148,255,0.15); color: var(--vscode-blue-bright);">현재</div>
             <div class="flow-diagram" style="margin-top: 0;">
@@ -638,7 +715,7 @@
               <div class="flow-box">텍스트 응답</div>
             </div>
           </div>
-          <div class="paradigm-down-arrow" style="color: var(--vscode-teal);">↓</div>
+          <div class="paradigm-down-arrow" style="color: var(--vscode-teal);">▼</div>
           <div class="paradigm-row">
             <div class="paradigm-label" style="background: rgba(78,201,176,0.2); color: var(--vscode-teal);">미래</div>
             <div class="flow-diagram" style="margin-top: 0;">
@@ -650,11 +727,7 @@
             </div>
           </div>
         </div>
-        <ul class="hlist appear" style="margin-top: 20px;">
-          <li>수면 중 GitHub PR 자동 제출</li>
-          <li>매일 6시 이메일 분류</li>
-          <li>커피 타임에 웹앱 빌드</li>
-        </ul>
+        <p class="appear" style="font-size: 12px; color: var(--text-secondary); margin-top: 8px; padding-left: 72px;">// 마감파일 자동 제작 · 매일 6시 이메일 분류 · 커피 타임에 웹앱 빌드</p>
       </div>
     </section>
 
@@ -729,11 +802,11 @@
         <div class="cards appear" style="margin-top: 36px;">
           <div class="card card--orange">
             <div class="card-title accent-orange">DHL AI 투자: 1조 500억원+</div>
-            <p>AI 에이전트가 예약 스케줄링, 드라이버 후속 전화, 창고 협업 조율 자동 처리</p>
+            <p> - AI 에이전트가 예약 스케줄링, 드라이버 후속 전화<br>- 창고 협업 조율 자동 처리</p>
           </div>
           <div class="card card--teal">
             <div class="card-title accent-teal">UPS 참고 (비교)</div>
-            <p>ORION: 연 1억 마일 절감, $400M(6,000억원) 절약</p>
+            <p>- ORION(경로 최적화 시스템): 연 1억 마일 절감<br>- $ 400M(6,000억원) 절약</p>
           </div>
         </div>
       </div>
@@ -751,9 +824,9 @@
         <div class="cards appear" style="margin-top: 24px;">
           <div class="card card--green">
             <div class="card-title accent-green">왜 VBA인가?</div>
-            <p>✅ 추가 설치 없음 — 이미 Excel에 있음</p>
+            <p>✅ 추가 설치 없음 — 이미 MS OFFICE에 존재</p>
             <p>✅ 회사 IT 정책 승인 불필요</p>
-            <p>✅ Excel, Word, PPT, Outlook 연동</p>
+            <p>✅ Excel, Word, PPT, Outlook 연계 가능</p>
             <p>✅ GPT가 코드를 전부 생성 가능</p>
           </div>
           <div class="card card--green">
@@ -814,7 +887,7 @@
     <!-- ====== SLIDE 13: MODULAR APPROACH (❌ vs ✅) ====== -->
     <section class="slide slide--green">
       <div class="bg-grid"></div>
-      <div class="slide-content">
+      <div class="slide-content wide">
         <p class="tag tag-green appear"><span class="chapter-badge" style="background: rgba(106,153,85,0.2); color: var(--vscode-green);">CH.2</span> METHODOLOGY</p>
         <h2 class="appear">모듈화 접근법 — <span class="accent-red">❌</span> vs <span class="accent-green">✅</span></h2>
         <div class="cards appear">
@@ -835,14 +908,31 @@
             <p style="color: var(--vscode-teal); font-weight: 700; margin-top: 8px;">결과: 완성 🎉</p>
           </div>
         </div>
-        <div class="flow-diagram appear" style="margin-top: 20px;">
-          <div class="flow-box" style="background: rgba(106,153,85,0.15); border-color: rgba(106,153,85,0.4);">🔧 엔진<br><span style="font-size: 11px;">데이터 읽기</span></div>
-          <div class="flow-arrow" style="color: var(--vscode-green);">→</div>
-          <div class="flow-box" style="background: rgba(78,201,176,0.15); border-color: rgba(78,201,176,0.4);">⚙️ 변속기<br><span style="font-size: 11px;">날짜 정리</span></div>
-          <div class="flow-arrow" style="color: var(--vscode-teal);">→</div>
-          <div class="flow-box" style="background: rgba(55,148,255,0.15); border-color: rgba(55,148,255,0.4);">🚗 차체<br><span style="font-size: 11px;">결과 출력</span></div>
-          <div class="flow-arrow" style="color: var(--vscode-blue-bright);">→</div>
-          <div class="flow-box" style="background: rgba(220,220,170,0.15); border-color: rgba(220,220,170,0.4);">🏁 완성차<br><span style="font-size: 11px;">전체 자동화</span></div>
+        <p class="appear" style="font-size: 20px; font-weight: 700; margin-top: 16px;">자동차 조립처럼, 단계별로 진행</p>
+        <div class="appear" style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
+          <div class="card" style="flex: 1; border-color: rgba(106,153,85,0.4); background: rgba(106,153,85,0.08); text-align: center; padding: 16px;">
+            <div style="font-size: 24px;">🔧</div>
+            <div style="font-size: 15px; font-weight: 700; color: #fff; margin: 4px 0;">설계</div>
+            <div style="font-size: 12px; color: var(--text-secondary);">데이터 읽기</div>
+          </div>
+          <div class="flow-arrow" style="color: var(--vscode-green); flex-shrink: 0;">→</div>
+          <div class="card" style="flex: 1; border-color: rgba(78,201,176,0.4); background: rgba(78,201,176,0.08); text-align: center; padding: 16px;">
+            <div style="font-size: 24px;">⚙️</div>
+            <div style="font-size: 15px; font-weight: 700; color: #fff; margin: 4px 0;">모듈 부품</div>
+            <div style="font-size: 12px; color: var(--text-secondary);">데이터 정제</div>
+          </div>
+          <div class="flow-arrow" style="color: var(--vscode-teal); flex-shrink: 0;">→</div>
+          <div class="card" style="flex: 1; border-color: rgba(55,148,255,0.4); background: rgba(55,148,255,0.08); text-align: center; padding: 16px;">
+            <div style="font-size: 24px;">🚗</div>
+            <div style="font-size: 15px; font-weight: 700; color: #fff; margin: 4px 0;">차체</div>
+            <div style="font-size: 12px; color: var(--text-secondary);">결과 출력</div>
+          </div>
+          <div class="flow-arrow" style="color: var(--vscode-blue-bright); flex-shrink: 0;">→</div>
+          <div class="card" style="flex: 1; border-color: rgba(220,220,170,0.4); background: rgba(220,220,170,0.08); text-align: center; padding: 16px;">
+            <div style="font-size: 24px;">🏁</div>
+            <div style="font-size: 15px; font-weight: 700; color: #fff; margin: 4px 0;">완성차</div>
+            <div style="font-size: 12px; color: var(--text-secondary);">전체 자동화</div>
+          </div>
         </div>
       </div>
     </section>
@@ -898,20 +988,13 @@
       </div>
     </section>
 
-    <!-- ====== SLIDE 16: STEP 3 — 독립 테스트 ====== -->
+    <!-- ====== SLIDE 16: 오류 발생 시 대처법 ====== -->
     <section class="slide slide--dark">
       <div class="bg-glow" style="top: -80px; left: -80px; background: var(--vscode-blue);"></div>
       <div class="bg-grid"></div>
       <div class="slide-content">
         <p class="tag tag-blue appear"><span class="chapter-badge" style="background: rgba(55,148,255,0.2); color: var(--vscode-blue-bright);">STEP 3/4</span></p>
-        <h2 class="appear">3. 각 모듈 <span class="accent-blue">독립 테스트</span></h2>
-        <ul class="checklist appear">
-          <li><span class="check-icon">☐</span> <span>실제 파일 <strong style="color: #fff;">백업 완료</strong></span></li>
-          <li><span class="check-icon">☐</span> <span>테스트용 <strong style="color: #fff;">더미 데이터</strong> 준비 (5~10행)</span></li>
-          <li><span class="check-icon">☐</span> <span>파일명: <strong style="color: #fff;">TEST_원본파일명.xlsx</strong></span></li>
-          <li><span class="check-icon">☐</span> <span><strong style="color: #fff;">원본 파일은 절대 건드리지 않음</strong></span></li>
-        </ul>
-        <p class="appear" style="font-size: 14px; font-weight: 700; margin-top: 20px; color: #fff;">⚠️ 오류 발생 시 대처법</p>
+        <h2 class="appear">3. 오류 발생 시 <span class="accent-blue">대처법</span></h2>
         <div class="error-flow appear">
           <div class="error-flow-step">
             <span style="color: var(--vscode-red);">🔴</span>
@@ -1033,19 +1116,20 @@
       <div class="slide-content">
         <p class="tag tag-teal appear"><span class="chapter-badge" style="background: rgba(78,201,176,0.2); color: var(--vscode-teal);">CH.3</span> FUTURE</p>
         <h2 class="appear">업무 환경의 진화 & <span class="accent-teal">3가지 시사점</span></h2>
+        <p class="appear" style="font-size: 14px; color: var(--text-secondary); margin-top: -4px;">"미래에는 AI에게 <span class="accent-teal">지침을 주고 컨텍스트 관가</span>가 일이 될 것" - C.H. Robinson (글로벌 포워딩 기업)</p>
         <div class="steps appear">
           <div class="step" style="border-color: rgba(78,201,176,0.3);">
             <div class="step-num" style="background: rgba(78,201,176,0.2); color: var(--vscode-teal);">1</div>
             <div class="step-content">
               <div class="step-title">아이디어만 있으면 누구나 만들 수 있다</div>
-              <div class="step-desc">에이전트 구축: <span class="accent-teal" style="font-weight: 700;">15~60분</span> · 비개발자가 1주일 만에 허가 자동화 툴 완성</div>
+              <div class="step-desc">코딩실력이 부족해도 <span class="accent-teal" style="font-weight: 700;">누구나 개발 가능</span></div>
             </div>
-          </div>
+          </div>  
           <div class="step" style="border-color: rgba(55,148,255,0.3);">
             <div class="step-num" style="background: rgba(55,148,255,0.2); color: var(--vscode-blue-bright);">2</div>
             <div class="step-content">
               <div class="step-title">도메인 전문성이 새로운 경쟁력</div>
-              <div class="step-desc">예전: 기술을 가진 사람이 문제를 해결<br>지금: <span class="accent-blue" style="font-weight: 700;">문제를 가진 사람</span>이 기술을 쓰는 시대</div>
+              <div class="step-desc">예전: 기술을 가진 사람이 문제를 해결 / 지금: <span class="accent-blue" style="font-weight: 700;">문제를 가진 사람</span>이 기술을 사용</div>
             </div>
           </div>
           <div class="step" style="border-color: rgba(220,220,170,0.3);">
@@ -1055,9 +1139,6 @@
               <div class="step-desc">매일 반복하는 불편함 → <span class="accent-yellow" style="font-weight: 700;">다음 자동화의 출발점</span></div>
             </div>
           </div>
-        </div>
-        <div class="emphasis-box appear" style="border-left-color: var(--vscode-teal); margin-top: 16px;">
-          <p style="font-size: 14px;">C.H. Robinson (글로벌 포워딩 기업): "미래에는 AI에게 <span class="accent-teal">지침을 주고 컨텍스트를 관리</span>하는 일이 될 것"</p>
         </div>
       </div>
     </section>
@@ -1069,6 +1150,7 @@
       <div class="slide-content">
         <p class="tag tag-teal appear"><span class="chapter-badge" style="background: rgba(78,201,176,0.2); color: var(--vscode-teal);">CH.3</span> EVOLUTION</p>
         <h2 class="appear">AI 활용 역량의 <span class="accent-teal">3단계 진화</span></h2>
+        <p class="appear" style="font-size: 14px; color: var(--text-secondary); margin-top: -4px;">"AI에게 필요한 정보만 정확하게 제공하는 섬세한 기술이 필요." — Andrej Karpathy, OpenAI 공동창업자</p>
         <div class="evo-stages appear">
           <div class="evo-stage" style="background: rgba(55,148,255,0.08); border-radius: 10px;">
             <div class="evo-num" style="background: rgba(55,148,255,0.2); color: var(--vscode-blue-bright);">1</div>
@@ -1094,32 +1176,29 @@
             </div>
           </div>
         </div>
-        <div class="emphasis-box appear" style="border-left-color: var(--vscode-purple); margin-top: 20px;">
-          <p style="font-size: 14px;">"컨텍스트 엔지니어링이란, 다음 단계를 위해 AI의 맥락을 딱 필요한 정보로만 채우는 섬세한 기술이다."</p>
-          <span style="font-size: 12px; color: var(--text-secondary); display: block; margin-top: 4px;">— Andrej Karpathy, OpenAI 공동창업자</span>
-        </div>
       </div>
     </section>
 
     <!-- ====== SLIDE 22: ORCHESTRATOR ====== -->
     <section class="slide slide--teal">
       <div class="bg-grid"></div>
-      <div class="slide-content" style="align-items: center; text-align: center;">
+      <div class="slide-content wide">
         <p class="tag tag-teal appear"><span class="chapter-badge" style="background: rgba(78,201,176,0.2); color: var(--vscode-teal);">CH.3</span> ORCHESTRATOR</p>
         <h2 class="appear">오케스트레이터로의 <span class="accent-teal">전환</span></h2>
-        <div class="cards appear" style="text-align: left;">
-          <div class="card" style="text-align: center;">
+        <div class="appear" style="display: flex; align-items: center; gap: 16px; width: 100%;">
+          <div class="card" style="flex: 1; text-align: center;">
             <div style="font-size: 40px; margin-bottom: 8px;">🎻</div>
             <div class="card-title" style="color: var(--text-secondary);">과거</div>
-            <p style="font-size: 16px; color: #fff;">혼자 바이올린을 연주</p>
+            <p style="font-size: 16px; color: #fff;">각자 악기를 연주</p>
           </div>
-          <div class="card card--teal" style="text-align: center;">
+          <div class="flow-arrow" style="color: var(--vscode-teal); flex-shrink: 0;">→</div>
+          <div class="card card--teal" style="flex: 1; text-align: center;">
             <div style="font-size: 40px; margin-bottom: 8px;">🎼</div>
             <div class="card-title accent-teal">현재</div>
-            <p style="font-size: 16px; color: #fff;">오케스트라 지휘자</p>
+            <p style="font-size: 16px; color: #fff;">오케스트라를 지휘</p>
           </div>
         </div>
-        <div class="emphasis-box appear" style="border-left-color: var(--vscode-teal); margin-top: 24px; text-align: left;">
+        <div class="emphasis-box appear" style="border-left: none; margin-top: 16px; text-align: center; width: 100%;">
           <p style="font-size: 15px;">"여러 AI 에이전트를 <span class="accent-teal">지휘하는 역할</span>로 변하고 있다"</p>
           <p style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">
             Salesforce: "Agentic Work Units" 새 직무 정의<br>
@@ -1135,34 +1214,34 @@
       <div class="bg-glow" style="bottom: -100px; left: -100px; background: var(--vscode-purple);"></div>
       <div class="bg-glow" style="bottom: -80px; right: -80px; background: var(--vscode-teal); opacity: 0.08;"></div>
       <div class="bg-grid"></div>
-      <div class="slide-content">
+      <div class="slide-content wide">
         <p class="tag tag-blue appear">WRAP UP</p>
         <h2 class="appear" style="font-size: 28px;">핵심 메시지 <span class="accent-blue">3줄 요약</span></h2>
         <div class="steps appear" style="text-align: left; margin-top: 20px;">
           <div class="step" style="border-color: rgba(55,148,255,0.3);">
             <div class="step-num" style="background: rgba(55,148,255,0.2); color: var(--vscode-blue-bright);">1</div>
             <div class="step-content">
-              <div class="step-title">AI 에이전트 시대 — 코딩보다 <span class="accent-blue">문제 정의 능력</span>이 더 중요</div>
+              <div class="step-title">AI 에이전트 시대 — 코딩보다 <span class="accent-blue highlight-anim" style="background-image: linear-gradient(rgba(55,148,255,0.25), rgba(55,148,255,0.25));">문제 정의 능력</span>이 더 중요</div>
             </div>
           </div>
           <div class="step" style="border-color: rgba(78,201,176,0.3);">
             <div class="step-num" style="background: rgba(78,201,176,0.2); color: var(--vscode-teal);">2</div>
             <div class="step-content">
-              <div class="step-title">당장 시작할 수 있는 것 — <span class="accent-teal">GPT + VBA</span>로 반복 업무를 자동화</div>
+              <div class="step-title">당장 시작할 수 있는 것 — <span class="accent-teal highlight-anim" style="background-image: linear-gradient(rgba(78,201,176,0.25), rgba(78,201,176,0.25));">GPT + VBA</span>로 반복 업무를 자동화</div>
             </div>
           </div>
           <div class="step" style="border-color: rgba(197,134,192,0.3);">
             <div class="step-num" style="background: rgba(197,134,192,0.2); color: var(--vscode-purple);">3</div>
             <div class="step-content">
-              <div class="step-title">앞으로 나아갈 방향 — <span class="accent-purple">AI 에이전트들의 오케스트레이터</span></div>
+              <div class="step-title">앞으로 나아갈 방향 — <span class="accent-purple highlight-anim" style="background-image: linear-gradient(rgba(197,134,192,0.25), rgba(197,134,192,0.25));">AI 에이전트들의 오케스트레이터</span></div>
             </div>
           </div>
         </div>
         <div class="appear" style="margin-top: 32px;">
           <p style="font-size: 16px; color: var(--vscode-yellow);">📢 다음 세션 예고</p>
-          <p style="font-size: 15px; margin-top: 8px;">"프로그래밍 언어 없이, AI와의 대화만으로<br><span class="accent-blue" style="font-weight: 700;">실제 웹서비스</span>를 만들어 보겠습니다."</p>
+          <p style="font-size: 15px; margin-top: 8px;">"프로그래밍 언어 없이, AI와의 대화만으로<br><span class="accent-blue" style="font-weight: 700;">실제 웹서비스</span>를 함께 만들어 보겠습니다."</p>
         </div>
-        <p class="appear" style="margin-top: 32px; font-size: 20px; font-weight: 700;">감사합니다 🙏</p>
+        <p class="appear" style="margin-top: 32px; font-size: 20px; font-weight: 700;">경청해주셔서 감사합니다 🙏</p>
       </div>
     </section>
 
