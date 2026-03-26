@@ -455,11 +455,14 @@
 
     /* ── Source citation ── */
     .slide-source {
-      position: absolute; bottom: 16px; left: 24px;
-      font-size: 12px; color: rgba(255,255,255,0.82);
-      font-family: 'Inter', sans-serif; z-index: 10;
-      line-height: 1.6;
+      font-size: 11px; color: rgba(255,255,255,0.82);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6; margin-top: 8px;
+      padding-left: 2px; display: block;
+      opacity: 0; transform: translateY(24px);
+      transition: opacity 0.6s ease 0.55s, transform 0.6s ease 0.55s;
     }
+    .slide.active .slide-source { opacity: 1; transform: translateY(0); }
 
     /* ── Print / PDF Export ── */
     @media print {
@@ -475,6 +478,7 @@
       }
       .slide:last-child { page-break-after: avoid; break-after: avoid; }
       .appear { opacity: 1 !important; transform: none !important; }
+      .slide-source { opacity: 1 !important; transform: none !important; }
       .bar { height: var(--target-height) !important; }
       .h-bar-fill { width: var(--target-width) !important; }
       .gh-bar { width: var(--target-width) !important; }
@@ -577,11 +581,11 @@
             <p style="font-size: 12px; margin-top: 8px; color: var(--vscode-yellow);">"비개발자들이 수백 명의 SW 엔지니어를 이겼다" — XDA</p>
           </div>
         </div>
+        <span class="slide-source">출처: Anthropic Threads (공식 발표) · XDA Developers, 2026</span>
         <div class="emphasis-box appear" style="border-left-color: var(--vscode-teal); margin-top: 16px;">
           <p style="font-size: 18px;">비유하면 이제는 악기를 다루지 못해도 <span class="accent-teal">작곡할 수 있는 시대</span>.</p>
         </div>
       </div>
-      <div class="slide-source">출처: Anthropic Threads (공식 발표) · XDA Developers, 2026</div>
     </section>
 
     <!-- ====== SLIDE 4: AI AGENT DEFINITION (통합) ====== -->
@@ -664,8 +668,8 @@
           </div>
         </div>
         <p class="appear" style="font-size: 13px; margin-top: 16px;">📈 YoY 성장: ChatGPT <span class="accent-blue">+180%</span> · Gemini <span class="accent-blue">+170%</span> · Claude <span class="accent-purple">+190%</span>
+        <span class="slide-source">출처: Similarweb (2026년 초) · TechCrunch (2025.12)</span>
       </div>
-      <div class="slide-source">출처: Similarweb (2026년 초) · TechCrunch (2025.12)</div>
     </section>
 
     <!-- ====== SLIDE 6: MARKET EXPLOSION (원화 환산) ====== -->
@@ -693,8 +697,8 @@
           </div>
         </div>
         <p class="appear" style="font-size: 12px; margin-top: 12px; color: var(--text-secondary);">💱 기준: 1달러 = 1,500원</p>
+        <span class="slide-source">출처: Gartner (2025.08) · Menlo Ventures (2025.12) · Deloitte (2025)</span>
       </div>
-      <div class="slide-source">출처: Gartner (2025.08) · Menlo Ventures (2025.12) · Deloitte (2025)</div>
     </section>
 
     <!-- ====== SLIDE 7: OPENCLAW + PARADIGM SHIFT ====== -->
@@ -721,6 +725,7 @@
             </div>
             <div class="gh-time">10년+</div>
           </div>
+          <span class="slide-source">출처: Blink Blog · GitHub (OpenClaw Repository, 2026.01)</span>
         </div>
         <hr class="appear" style="border: none; height: 1px; background: rgba(255,255,255,0.08); margin: 0;">
         <p class="appear" style="font-size: 20px; font-weight: 700; margin-bottom: -12px; margin-top: 12px;">AI가 바꿀 업무 방식</p>
@@ -760,7 +765,6 @@
         </div>
         <p class="appear" style="font-size: 12px; color: var(--text-secondary); margin-top: 8px; padding-left: 72px;">// 마감파일 자동 제작 · 매일 6시 이메일 분류 · 커피 타임에 웹앱 빌드</p>
       </div>
-      <div class="slide-source">출처: Blink Blog · GitHub (OpenClaw Repository, 2026.01)</div>
     </section>
 
     <!-- ====== SLIDE 9: AMAZON CASE STUDY ====== -->
@@ -792,11 +796,11 @@
             <div class="growth-sub">YoY · 2023 Q4</div>
           </div>
         </div>
+        <span class="slide-source">출처: Robotics &amp; Automation News (2025.07) · CDO Times · AWS ML Blog (2026.02) · Supply Chain Dive (2025.06)</span>
         <div class="emphasis-box appear" style="border-left-color: var(--vscode-orange); margin-top: 16px;">
           <p style="font-size: 15px;">로봇에게 자연어로 지시: "<span class="accent-orange">왼쪽 노란 통에서 물건 집어서 회색 통에 넣어</span>"<br><span style="font-size: 13px; color: var(--text-secondary);">예전: 코드로 프로그래밍 → 지금: AI 에이전트가 자율 판단 실행</span></p>
         </div>
       </div>
-      <div class="slide-source">출처: Robotics &amp; Automation News (2025.07) · CDO Times · AWS Machine Learning Blog (2026.02) · Supply Chain Dive (2025.06)</div>
     </section>
 
     <!-- ====== SLIDE 10: DHL CASE STUDY ====== -->
@@ -832,7 +836,8 @@
             <div class="bar-label">정시 배송률</div>
           </div>
         </div>
-        <div class="cards appear" style="margin-top: 36px;">
+        <span class="slide-source" style="margin-top: 28px;">출처: DHL Group 공식 보도자료 (2025.11) · AIB Mag (2025.11) · Klover.ai (2025.07, UPS)</span>
+        <div class="cards appear" style="margin-top: 8px;">
           <div class="card card--orange">
             <div class="card-title accent-orange">DHL AI 투자: 1조 500억원+</div>
             <p> - AI 에이전트가 예약 스케줄링, 드라이버 후속 전화<br>- 창고 협업 조율 자동 처리</p>
@@ -843,7 +848,6 @@
           </div>
         </div>
       </div>
-      <div class="slide-source">출처: DHL Group 공식 보도자료 (2025.11) · AIB Mag (2025.11) · Klover.ai (2025.07, UPS)</div>
     </section>
 
     <!-- ====== SLIDE 11: VBA INTRO ====== -->
@@ -1147,7 +1151,7 @@
       <div class="bg-grid"></div>
       <div class="slide-content">
         <p class="tag tag-teal appear"><span class="chapter-badge" style="background: rgba(78,201,176,0.2); color: var(--vscode-teal);">CH.3</span> FUTURE</p>
-        <h2 class="appear">업무 환경의 진화 & <span class="accent-teal">3가지 시사점</span></h2>
+        <h2 class="appear">3 가지 <span class="accent-teal">시사점</span></h2>
         <p class="appear" style="font-size: 14px; color: var(--text-secondary); margin-top: -4px;">"미래에는 AI에게 <span class="accent-teal">지침을 주고 컨텍스트 관가</span>가 일이 될 것" - C.H. Robinson (글로벌 포워딩 기업)</p>
         <div class="steps appear">
           <div class="step" style="border-color: rgba(78,201,176,0.3);">
@@ -1172,8 +1176,8 @@
             </div>
           </div>
         </div>
+        <span class="slide-source">출처: C.H. Robinson (글로벌 포워딩) · IBM Institute for Business Value (2025)</span>
       </div>
-      <div class="slide-source">출처: C.H. Robinson (글로벌 포워딩) · IBM Institute for Business Value (2025)</div>
     </section>
 
     <!-- ====== SLIDE 21: EVOLUTION ====== -->
@@ -1209,8 +1213,8 @@
             </div>
           </div>
         </div>
+        <span class="slide-source">출처: Andrej Karpathy, OpenAI 공동창업자 · Anthropic Engineering Blog (Context Engineering, 2025.09)</span>
       </div>
-      <div class="slide-source">출처: Andrej Karpathy, OpenAI 공동창업자 · Anthropic Engineering Blog (Context Engineering, 2025.09)</div>
     </section>
 
     <!-- ====== SLIDE 22: ORCHESTRATOR ====== -->
@@ -1239,8 +1243,8 @@
             Morgan Stanley: "더 적은 인원으로 더 많은 성과"
           </p>
         </div>
+        <span class="slide-source">출처: Salesforce (Agentic Work Units 발표, 2025) · Morgan Stanley Research (2025)</span>
       </div>
-      <div class="slide-source">출처: Salesforce (Agentic Work Units 발표, 2025) · Morgan Stanley Research (2025)</div>
     </section>
 
     <!-- ====== SLIDE 23: CLOSING ====== -->
@@ -1273,8 +1277,8 @@
           </div>
         </div>
         <div class="appear" style="margin-top: 32px;">
-          <p style="font-size: 16px; color: var(--vscode-yellow);">📢 다음 세션 예고</p>
-          <p style="font-size: 15px; margin-top: 8px;">"프로그래밍 언어 없이, AI와의 대화만으로<br><span class="accent-blue" style="font-weight: 700;">실제 웹서비스</span>를 함께 만들어 보겠습니다."</p>
+          <p style="font-size: 16px; color: var(--vscode-yellow);">📢 다음 세션(심화)</p>
+          <p style="font-size: 15px; margin-top: 8px;">"프로그래밍 언어 없이, AI와의 대화만으로<br><span class="accent-blue" style="font-weight: 700;">웹서비스</span>를 함께 제작."</p>
         </div>
         <p class="appear" style="margin-top: 32px; font-size: 20px; font-weight: 700;">감사합니다 🙏</p>
       </div>
