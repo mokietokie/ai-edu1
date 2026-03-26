@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI 에이전트 시대, 우리는 어떻게 일해야 하는가</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --vscode-bg: #1E1E1E;
+      --vscode-bg-dark: #191919;
+      --vscode-bg-lighter: #252526;
+      --vscode-blue: #007ACC;
+      --vscode-blue-bright: #3794FF;
+      --vscode-teal: #4EC9B0;
+      --vscode-purple: #C586C0;
+      --vscode-yellow: #DCDCAA;
+      --vscode-orange: #CE9178;
+      --vscode-green: #6A9955;
+      --vscode-red: #F44747;
+      --text-primary: #FFFFFF;
+      --text-secondary: #E0E0E0;
+      --text-bright: #F5F5F5;
+    }
+
+    body {
+      width: 100vw; height: 100dvh;
+      background: var(--vscode-bg);
+      overflow: hidden;
+      font-family: 'Noto Sans KR', 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .presentation { position: fixed; inset: 0; width: 100vw; height: 100dvh; overflow: hidden; }
+
+    .slide { position: absolute; inset: 0; display: none; overflow: hidden; }
+    .slide.active, .slide.transitioning { display: flex; align-items: center; justify-content: center; }
+
+    .slide-content {
+      max-width: 780px; width: 100%;
+      padding: 60px 32px;
+      display: flex; flex-direction: column;
+      justify-content: center;
+      color: var(--text-primary);
+      position: relative;
+      z-index: 2;
+    }
+
+    .slide-content.wide { max-width: 900px; }
+
+    /* ── Typography ── */
+    h1 { font-size: 44px; font-weight: 900; margin-bottom: 16px; line-height: 1.35; color: #fff; }
+    h2 { font-size: 32px; font-weight: 700; margin-bottom: 22px; line-height: 1.35; color: #fff; }
+    h3 { font-size: 22px; font-weight: 700; margin-bottom: 16px; color: #fff; }
+    p  { font-size: 17px; line-height: 1.75; margin-bottom: 12px; color: var(--text-secondary); }
+    ul { font-size: 16px; line-height: 1.9; padding-left: 24px; color: var(--text-secondary); }
+    li { margin-bottom: 4px; }
+    li::marker { color: var(--vscode-blue); }
+
+    /* ── Section Themes ── */
+    .slide--title { background: linear-gradient(160deg, #1a1a2e, #16213e, #0f3460); }
+    .slide--title .slide-content { align-items: center; text-align: center; }
+    .slide--dark { background: var(--vscode-bg); }
+    .slide--blue { background: linear-gradient(160deg, #0d1b2a, #1b2838, #1a365d); }
+    .slide--teal { background: linear-gradient(160deg, #0a1f1a, #122925, #0d3028); }
+    .slide--purple { background: linear-gradient(160deg, #1a0f2e, #221536, #2d1b4e); }
+    .slide--orange { background: linear-gradient(160deg, #1f1510, #2a1a10, #3d2215); }
+    .slide--green { background: linear-gradient(160deg, #0f1a10, #152215, #1a3018); }
+    .slide--red { background: linear-gradient(160deg, #1f0f0f, #2a1515, #3d1a1a); }
+
+    /* ── Accent Colors ── */
+    .accent-blue { color: var(--vscode-blue-bright); }
+    .accent-teal { color: var(--vscode-teal); }
+    .accent-purple { color: var(--vscode-purple); }
+    .accent-yellow { color: var(--vscode-yellow); }
+    .accent-orange { color: var(--vscode-orange); }
+    .accent-green { color: var(--vscode-green); }
+    .accent-red { color: var(--vscode-red); }
+
+    .tag { font-size: 13px; font-weight: 600; margin-bottom: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .tag-blue { color: var(--vscode-blue-bright); }
+    .tag-teal { color: var(--vscode-teal); }
+    .tag-purple { color: var(--vscode-purple); }
+    .tag-orange { color: var(--vscode-orange); }
+    .tag-green { color: var(--vscode-green); }
+
+    .subtitle { font-size: 20px; color: var(--text-secondary); margin-top: 8px; line-height: 1.6; }
+
+    /* ── Cards ── */
+    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; width: 100%; }
+    .card {
+      border: 1px solid rgba(0, 122, 204, 0.25);
+      border-radius: 12px; padding: 24px 20px;
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(4px);
+    }
+    .card-title { font-size: 15px; font-weight: 700; margin-bottom: 12px; letter-spacing: 0.02em; }
+    .card p, .card li { font-size: 14px; line-height: 1.75; color: var(--text-secondary); margin-bottom: 4px; }
+    .card ul { padding-left: 0; list-style: none; }
+    .card li::before { content: ''; display: none; }
+    .card--wide { grid-column: 1 / -1; }
+    .card--teal { border-color: rgba(78, 201, 176, 0.3); }
+    .card--purple { border-color: rgba(197, 134, 192, 0.3); }
+    .card--orange { border-color: rgba(206, 145, 120, 0.3); }
+    .card--green { border-color: rgba(106, 153, 85, 0.3); }
+
+    /* ── Stats ── */
+    .stat { font-size: 52px; font-weight: 800; line-height: 1; margin-bottom: 6px; }
+    .stat-label { font-size: 14px; color: var(--text-secondary); }
+    .stats-row { display: flex; gap: 32px; margin-top: 24px; flex-wrap: wrap; }
+    .stats-item { flex: 1; min-width: 140px; text-align: center; }
+
+    /* ── Horizontal list ── */
+    .hlist { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; padding: 0; list-style: none; }
+    .hlist li {
+      font-size: 13px; color: var(--text-primary);
+      background: rgba(0, 122, 204, 0.12);
+      border: 1px solid rgba(0, 122, 204, 0.25);
+      border-radius: 8px; padding: 8px 16px; margin-bottom: 0;
+    }
+
+    /* ── Code block ── */
+    pre.code-block {
+      background: #141414; border-radius: 10px; padding: 22px 24px;
+      overflow: auto; font-size: 14px; line-height: 1.8;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      margin-top: 18px; color: var(--text-secondary);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .code-line { display: block; padding: 1px 6px; border-radius: 3px; transition: background-color 0.3s ease, opacity 0.3s ease; }
+    pre.has-highlight .code-line { opacity: 0.3; }
+    pre.has-highlight .code-line.highlighted { opacity: 1; background: rgba(0, 122, 204, 0.15); border-left: 2px solid var(--vscode-blue); padding-left: 10px; }
+
+    /* ── Appear animation ── */
+    .appear { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .slide.active .appear { opacity: 1; transform: translateY(0); }
+    .appear:nth-child(2) { transition-delay: 0.1s; }
+    .appear:nth-child(3) { transition-delay: 0.2s; }
+    .appear:nth-child(4) { transition-delay: 0.3s; }
+    .appear:nth-child(5) { transition-delay: 0.4s; }
+    .appear:nth-child(6) { transition-delay: 0.5s; }
+    .appear:nth-child(7) { transition-delay: 0.6s; }
+    .appear:nth-child(8) { transition-delay: 0.7s; }
+
+    /* ── Bar Chart ── */
+    .bar-chart { display: flex; align-items: flex-end; gap: 16px; height: 220px; margin-top: 24px; padding-bottom: 30px; position: relative; }
+    .bar-chart::after { content: ''; position: absolute; bottom: 28px; left: 0; right: 0; height: 1px; background: rgba(255,255,255,0.1); }
+    .bar-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; position: relative; z-index: 1; }
+    .bar {
+      width: 100%; max-width: 70px; border-radius: 6px 6px 0 0;
+      position: relative; min-height: 4px;
+      transition: height 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .bar-value { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; }
+    .bar-label { font-size: 11px; color: var(--text-secondary); text-align: center; position: absolute; bottom: -24px; width: 100%; white-space: nowrap; }
+    .bar--blue { background: linear-gradient(180deg, var(--vscode-blue-bright), var(--vscode-blue)); }
+    .bar--teal { background: linear-gradient(180deg, #5ed4be, var(--vscode-teal)); }
+    .bar--purple { background: linear-gradient(180deg, #d4a0d0, var(--vscode-purple)); }
+    .bar--yellow { background: linear-gradient(180deg, #e8e0b0, var(--vscode-yellow)); }
+    .bar--orange { background: linear-gradient(180deg, #dca088, var(--vscode-orange)); }
+    .bar--green { background: linear-gradient(180deg, #8cbf70, var(--vscode-green)); }
+    .bar { height: 0 !important; }
+    .slide.active .bar { height: var(--target-height) !important; }
+
+    /* ── Flow arrows ── */
+    .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 0; margin-top: 28px; flex-wrap: wrap; }
+    .flow-box {
+      padding: 16px 24px; border-radius: 10px;
+      font-size: 15px; font-weight: 700; color: #fff;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.05);
+      text-align: center; min-width: 120px;
+    }
+    .flow-arrow { font-size: 28px; color: var(--vscode-blue-bright); opacity: 0; transform: translateX(-10px); animation: none; }
+    .slide.active .flow-arrow { animation: arrowPulse 1.5s ease-in-out infinite; }
+    .slide.active .flow-arrow:nth-child(2) { animation-delay: 0s; }
+    .slide.active .flow-arrow:nth-child(4) { animation-delay: 0.3s; }
+    .slide.active .flow-arrow:nth-child(6) { animation-delay: 0.6s; }
+    .slide.active .flow-arrow:nth-child(8) { animation-delay: 0.9s; }
+    @keyframes arrowPulse {
+      0% { opacity: 0.3; transform: translateX(-6px); }
+      50% { opacity: 1; transform: translateX(6px); }
+      100% { opacity: 0.3; transform: translateX(-6px); }
+    }
+
+    /* ── Paradigm flow (vertical) ── */
+    .paradigm-flow { display: flex; flex-direction: column; gap: 0; margin-top: 24px; }
+    .paradigm-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; }
+    .paradigm-label { font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 6px; min-width: 60px; text-align: center; }
+    .paradigm-down-arrow { font-size: 24px; padding-left: 26px; opacity: 0; color: var(--vscode-teal); }
+    .slide.active .paradigm-down-arrow { animation: downArrowPulse 2s ease-in-out infinite; }
+    @keyframes downArrowPulse {
+      0%, 100% { opacity: 0.2; transform: translateY(-4px); }
+      50% { opacity: 1; transform: translateY(4px); }
+    }
+
+    /* ── Big Quote ── */
+    .big-quote {
+      font-size: 24px; font-weight: 700; line-height: 1.55;
+      color: #fff; position: relative; padding-left: 24px;
+      border-left: 3px solid var(--vscode-blue);
+    }
+    .big-quote.teal-border { border-left-color: var(--vscode-teal); }
+    .big-quote.purple-border { border-left-color: var(--vscode-purple); }
+    .big-quote.orange-border { border-left-color: var(--vscode-orange); }
+
+    /* ── Pulse glow ── */
+    .pulse-glow { animation: none; }
+    .slide.active .pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
+    @keyframes pulseGlow {
+      0%, 100% { text-shadow: 0 0 8px rgba(55, 148, 255, 0.3); }
+      50% { text-shadow: 0 0 24px rgba(55, 148, 255, 0.7), 0 0 48px rgba(55, 148, 255, 0.3); }
+    }
+
+    /* ── Counter animation ── */
+    .count-up { font-variant-numeric: tabular-nums; }
+
+    /* ── Table style ── */
+    .data-table { width: 100%; margin-top: 20px; border-collapse: collapse; }
+    .data-table th { font-size: 13px; font-weight: 700; text-align: left; padding: 10px 14px; border-bottom: 2px solid rgba(255,255,255,0.12); color: var(--text-primary); }
+    .data-table td { font-size: 14px; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--text-secondary); }
+    .data-table tr:hover td { background: rgba(255,255,255,0.03); }
+    .data-table .highlight-cell { color: var(--vscode-blue-bright); font-weight: 700; }
+
+    /* ── Steps ── */
+    .steps { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
+    .step {
+      display: flex; align-items: flex-start; gap: 16px;
+      padding: 16px; border-radius: 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .step-num {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; flex-shrink: 0;
+    }
+    .step-content { flex: 1; }
+    .step-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+    .step-desc { font-size: 13px; color: var(--text-secondary); }
+
+    /* ── Evolution stages ── */
+    .evo-stages { display: flex; flex-direction: column; gap: 0; margin-top: 24px; }
+    .evo-stage { display: flex; align-items: center; gap: 16px; padding: 18px 20px; border-radius: 10px; }
+    .evo-num { font-size: 13px; font-weight: 800; padding: 4px 10px; border-radius: 6px; }
+    .evo-title { font-size: 16px; font-weight: 700; color: #fff; }
+    .evo-desc { font-size: 13px; color: var(--text-secondary); margin-top: 2px; }
+    .evo-arrow-down { text-align: center; font-size: 22px; padding: 4px 0; opacity: 0; }
+    .slide.active .evo-arrow-down { animation: evoArrow 1.8s ease-in-out infinite; }
+    @keyframes evoArrow {
+      0%, 100% { opacity: 0.2; transform: translateY(-3px); }
+      50% { opacity: 1; transform: translateY(3px); }
+    }
+
+    /* ── Horizontal bar ── */
+    .h-bar-chart { display: flex; flex-direction: column; gap: 14px; margin-top: 20px; }
+    .h-bar-row { display: flex; align-items: center; gap: 12px; }
+    .h-bar-label { font-size: 13px; font-weight: 600; color: var(--text-primary); min-width: 100px; text-align: right; }
+    .h-bar-track { flex: 1; height: 28px; background: rgba(255,255,255,0.04); border-radius: 6px; overflow: hidden; position: relative; }
+    .h-bar-fill {
+      height: 100%; border-radius: 6px; width: 0;
+      transition: width 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      display: flex; align-items: center; padding-left: 10px;
+      font-size: 12px; font-weight: 700; color: #fff;
+    }
+    .slide.active .h-bar-fill { width: var(--target-width); }
+
+    /* ── Growth cards ── */
+    .growth-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+    .growth-card {
+      padding: 20px; border-radius: 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      text-align: center;
+    }
+    .growth-value { font-size: 36px; font-weight: 800; margin-bottom: 4px; }
+    .growth-label { font-size: 12px; color: var(--text-secondary); line-height: 1.4; }
+    .growth-sub { font-size: 11px; color: var(--vscode-teal); margin-top: 4px; }
+
+    /* ── GitHub compare ── */
+    .github-compare { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
+    .gh-row { display: flex; align-items: center; gap: 14px; }
+    .gh-name { font-size: 14px; font-weight: 700; min-width: 90px; color: var(--text-primary); }
+    .gh-bar-wrap { flex: 1; height: 32px; background: rgba(255,255,255,0.04); border-radius: 8px; overflow: hidden; position: relative; }
+    .gh-bar {
+      height: 100%; border-radius: 8px; width: 0;
+      transition: width 2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      display: flex; align-items: center; justify-content: flex-end;
+      padding-right: 10px; font-size: 12px; font-weight: 700; color: #fff;
+    }
+    .slide.active .gh-bar { width: var(--target-width); }
+    .gh-time { font-size: 11px; color: var(--text-secondary); min-width: 60px; }
+
+    /* ── Emphasis box ── */
+    .emphasis-box {
+      margin-top: 24px; padding: 24px 28px;
+      border-radius: 12px; border-left: 4px solid;
+      background: rgba(255,255,255,0.03);
+    }
+    .emphasis-box p { font-size: 18px; font-weight: 700; color: #fff; margin: 0; }
+
+    /* ── Grid 3-col ── */
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 20px; }
+    .grid-3 .card { padding: 20px 16px; }
+
+    /* ── Checklist ── */
+    .checklist { list-style: none; padding: 0; margin-top: 16px; }
+    .checklist li {
+      padding: 12px 16px; margin-bottom: 8px;
+      border-radius: 8px; background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      font-size: 15px; color: var(--text-secondary);
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .checklist .check-icon { color: var(--vscode-teal); font-weight: 700; flex-shrink: 0; }
+
+    /* ── Chapter badge ── */
+    .chapter-badge {
+      display: inline-block; font-size: 11px; font-weight: 800;
+      padding: 4px 10px; border-radius: 4px; letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    /* ── VBA code style ── */
+    .vba-code {
+      background: #1a1a2e; border-radius: 10px; padding: 20px 24px;
+      font-family: 'JetBrains Mono', monospace; font-size: 13px;
+      line-height: 1.8; color: var(--text-secondary); margin-top: 16px;
+      border: 1px solid rgba(55,148,255,0.15); overflow-x: auto;
+    }
+    .vba-code .keyword { color: var(--vscode-blue-bright); }
+    .vba-code .comment { color: var(--vscode-green); }
+    .vba-code .string { color: var(--vscode-orange); }
+    .vba-code .func { color: var(--vscode-yellow); }
+
+    /* ── Before/After comparison ── */
+    .compare-table { width: 100%; margin-top: 16px; border-collapse: collapse; }
+    .compare-table th { font-size: 13px; padding: 10px 14px; text-align: center; border-bottom: 2px solid rgba(255,255,255,0.1); }
+    .compare-table td { font-size: 14px; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); color: var(--text-secondary); text-align: center; }
+    .compare-table .before { color: var(--text-secondary); }
+    .compare-table .after { color: var(--vscode-teal); font-weight: 700; }
+
+    /* ── Progress bar & counter ── */
+    #progress-bar { position: fixed; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(255,255,255,0.04); z-index: 1000; }
+    #progress-fill { height: 100%; width: 0%; background: var(--vscode-blue); transition: width 0.3s ease; }
+    #slide-counter { position: fixed; bottom: 16px; right: 24px; font-size: 12px; color: rgba(0, 122, 204, 0.5); font-family: 'JetBrains Mono', monospace; z-index: 1000; user-select: none; }
+
+    .speaker-notes { display: none; }
+
+    /* ── Background decorations ── */
+    .bg-grid {
+      position: absolute; inset: 0; z-index: 0;
+      background-image: linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px; pointer-events: none;
+    }
+    .bg-glow {
+      position: absolute; width: 400px; height: 400px; border-radius: 50%;
+      filter: blur(120px); opacity: 0.12; pointer-events: none; z-index: 0;
+    }
+
+    /* ── Error flow arrow ── */
+    .error-flow { display: flex; flex-direction: column; gap: 0; margin-top: 16px; }
+    .error-flow-step { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); }
+    .error-flow-arrow { text-align: center; font-size: 20px; padding: 4px 0; opacity: 0; color: var(--vscode-green); }
+    .slide.active .error-flow-arrow { animation: evoArrow 1.8s ease-in-out infinite; }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .slide-content { padding: 40px 20px; }
+      h1 { font-size: 30px; }
+      h2 { font-size: 24px; }
+      .cards { grid-template-columns: 1fr; }
+      .growth-cards { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .stats-row { flex-direction: column; gap: 16px; }
+      .bar-chart { height: 160px; }
+      .stat { font-size: 36px; }
+      .flow-diagram { flex-direction: column; }
+      .flow-arrow { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="presentation" id="deck">
+
+    <!-- ====== SLIDE 1: TITLE ====== -->
+    <section class="slide slide--title active">
+      <div class="bg-glow" style="top: -100px; right: -100px; background: var(--vscode-blue);"></div>
+      <div class="bg-glow" style="bottom: -100px; left: -100px; background: var(--vscode-purple);"></div>
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-blue appear" style="font-size: 14px; letter-spacing: 0.15em;">2026 유통사업전략실 One-Day 세션  |  2026. 03. 27</p>
+        <h1 class="appear" style="font-size: 40px;">AI 에이전트 트렌드<br><span class="accent-blue pulse-glow">GPT와 VBA로 시작하는 업무 자동화</span></h1>
+        <p class="subtitle appear">"문제를 정의하고 기술을 쓰는 시대"</p>
+        <p class="appear" style="margin-top: 24px; font-size: 14px; color: var(--vscode-teal);">글로벌통상지원팀 이정목 매니저</p>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 2: TABLE OF CONTENTS (4대 챕터) ====== -->
+    <section class="slide slide--dark">
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-blue appear">AGENDA</p>
+        <h2 class="appear">오늘의 <span class="accent-blue">목차</span></h2>
+        <div class="steps appear">
+          <div class="step" style="border-left: 3px solid var(--vscode-blue-bright);">
+            <div class="step-num" style="background: rgba(55,148,255,0.15); color: var(--vscode-blue-bright);">In</div>
+            <div class="step-content">
+              <div class="step-title">Intro</div>
+              <div class="step-desc">비개발자가 해커톤 1위를?</div>
+            </div>
+          </div>
+          <div class="step" style="border-left: 3px solid var(--vscode-purple);">
+            <div class="step-num" style="background: rgba(197,134,192,0.15); color: var(--vscode-purple);">1</div>
+            <div class="step-content">
+              <div class="step-title">Chapter 1 — AI 에이전트 트렌드</div>
+              <div class="step-desc">에이전트 정의 · AI 경쟁 구도 · 시장 성장성 · OpenClaw의 등장 · Amazon · DHL</div>
+            </div>
+          </div>
+          <div class="step" style="border-left: 3px solid var(--vscode-green);">
+            <div class="step-num" style="background: rgba(106,153,85,0.15); color: var(--vscode-green);">2</div>
+            <div class="step-content">
+              <div class="step-title">Chapter 2 — GPT+VBA를 활용한 업무 자동화</div>
+              <div class="step-desc">VBA 소개 · 모듈화 · Step 1~4 실전 · 프롬프트 원칙 · 유의사항</div>
+            </div>
+          </div>
+          <div class="step" style="border-left: 3px solid var(--vscode-teal);">
+            <div class="step-num" style="background: rgba(78,201,176,0.15); color: var(--vscode-teal);">3</div>
+            <div class="step-content">
+              <div class="step-title">Chapter 3 — 마무리</div>
+              <div class="step-desc">시사점 · AGENTIC ENGINEER</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 3: HACKATHON OPENING ====== -->
+    <section class="slide slide--blue">
+      <div class="bg-glow" style="top: -80px; left: -80px; background: var(--vscode-blue);"></div>
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-blue appear">INTRO</p>
+        <h2 class="appear">핵심은 코드의 우아함이 아니라<br><span class="accent-blue">문제 해결력 </span></h2>
+        <div class="stats-row appear">
+          <div class="stats-item">
+            <div class="stat accent-blue count-up" data-target="13000">0</div>
+            <div class="stat-label">해커톤 지원자</div>
+          </div>
+          <div class="stats-item">
+            <div class="stat accent-teal count-up" data-target="500">0</div>
+            <div class="stat-label">선발 인원</div>
+          </div>
+          <div class="stats-item">
+            <div class="stat accent-purple">3/5</div>
+            <div class="stat-label">비개발자 수상</div>
+          </div>
+        </div>
+        <div class="cards appear" style="margin-top: 20px;">
+          <div class="card">
+            <div class="card-title accent-blue">🏆 1위: 건설회사 비개발자</div>
+            <p>'CrossBeam' — 건축 허가 자동화</p>
+            <p>도면 읽기 + 법규 검토 + 수정 지시 분석</p>
+            <p style="color: var(--vscode-teal);">수개월 → 자동 단축</p>
+          </div>
+          <div class="card">
+            <div class="card-title accent-purple">다른 수상자들</div>
+            <p>🫀 심장전문의 · 🎵 음악가</p>
+            <p>🚧 우간다 도로 현장 노동자</p>
+            <p style="font-size: 12px; margin-top: 8px; color: var(--vscode-yellow);">"비개발자들이 수백 명의 SW 엔지니어를 이겼다" — XDA</p>
+          </div>
+        </div>
+        <div class="emphasis-box appear" style="border-left-color: var(--vscode-teal); margin-top: 16px;">
+          <p style="font-size: 18px;">"이제는 악기가 없어도 <span class="accent-teal">작곡할 수 있는 시대</span>."</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 4: AI AGENT DEFINITION (통합) ====== -->
+    <section class="slide slide--purple">
+      <div class="bg-glow" style="top: -80px; right: -80px; background: var(--vscode-purple);"></div>
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-purple appear"><span class="chapter-badge" style="background: rgba(197,134,192,0.2); color: var(--vscode-purple);">CH.1</span> CONCEPT</p>
+        <h2 class="appear">AI 에이전트란? <span class="accent-purple">챗봇과 무엇이 다른가</span></h2>
+        <div class="cards appear">
+          <div class="card">
+            <div class="card-title" style="color: var(--text-secondary);">일반 AI 챗봇</div>
+            <p>질문하면 답변 (1회성)</p>
+            <p>텍스트만 생성</p>
+            <p>사람이 매번 지시</p>
+            <p style="color: var(--vscode-yellow); font-size: 13px; margin-top: 8px;">"이메일 초안 써줘"</p>
+          </div>
+          <div class="card card--purple">
+            <div class="card-title accent-purple">AI 에이전트</div>
+            <p>목표를 받고 스스로 계획→실행→검토</p>
+            <p>이메일, 파일, 코드, 웹 등 도구 사용</p>
+            <p>단계별로 스스로 판단 후 실행</p>
+            <p style="color: var(--vscode-teal); font-size: 13px; margin-top: 8px;">"미팅 일정 보고 참석자에게 자동 발송해줘"</p>
+          </div>
+        </div>
+        <div class="emphasis-box appear" style="border-left-color: var(--vscode-purple); margin-top: 16px;">
+          <p style="font-size: 16px;">챗봇은 질문에 답하는 <span class="accent-purple">비서</span>, AI 에이전트는 스스로 판단하고 실행하는 <span class="accent-purple">직원</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 5: AI MODEL COMPETITION ====== -->
+    <section class="slide slide--purple">
+      <div class="bg-grid"></div>
+      <div class="slide-content wide">
+        <p class="tag tag-purple appear"><span class="chapter-badge" style="background: rgba(197,134,192,0.2); color: var(--vscode-purple);">CH.1</span> AI LANDSCAPE</p>
+        <h2 class="appear">AI모델 경쟁구도: <span class="accent-purple">점유율</span></h2>
+        <div class="h-bar-chart appear">
+          <div class="h-bar-row">
+            <div class="h-bar-label">ChatGPT</div>
+            <div class="h-bar-track">
+              <div class="h-bar-fill" style="--target-width: 100%; background: linear-gradient(90deg, #10a37f, #1a8870);">~64%</div>
+            </div>
+          </div>
+          <div class="h-bar-row">
+            <div class="h-bar-label">Gemini</div>
+            <div class="h-bar-track">
+              <div class="h-bar-fill" style="--target-width: 28%; background: linear-gradient(90deg, #4285f4, #3b78e7);">~18%</div>
+            </div>
+          </div>
+          <div class="h-bar-row">
+            <div class="h-bar-label">Copilot</div>
+            <div class="h-bar-track">
+              <div class="h-bar-fill" style="--target-width: 22%; background: linear-gradient(90deg, #7b83eb, #6c72c4);">~14%</div>
+            </div>
+          </div>
+          <div class="h-bar-row">
+            <div class="h-bar-label">Claude</div>
+            <div class="h-bar-track">
+              <div class="h-bar-fill" style="--target-width: 5%; background: linear-gradient(90deg, var(--vscode-orange), #b87a60);">~2%</div>
+            </div>
+          </div>
+          <div class="h-bar-row">
+            <div class="h-bar-label">Perplexity</div>
+            <div class="h-bar-track">
+              <div class="h-bar-fill" style="--target-width: 5%; background: linear-gradient(90deg, var(--vscode-teal), #3aaa96);">~2%</div>
+            </div>
+          </div>
+        </div>
+        <p class="appear" style="font-size: 13px; margin-top: 16px;">📈 YoY 성장: ChatGPT <span class="accent-blue">+180%</span> · Gemini <span class="accent-blue">+170%</span> · Claude <span class="accent-purple">+190%</span>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 6: MARKET EXPLOSION (원화 환산) ====== -->
+    <section class="slide slide--purple">
+      <div class="bg-glow" style="bottom: -80px; left: -80px; background: var(--vscode-purple);"></div>
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-purple appear"><span class="chapter-badge" style="background: rgba(197,134,192,0.2); color: var(--vscode-purple);">CH.1</span> MARKET</p>
+        <h2 class="appear">AI 시장의 <span class="accent-purple">폭발적 성장</span></h2>
+        <div class="growth-cards appear">
+          <div class="growth-card" style="border-color: rgba(197,134,192,0.2);">
+            <div class="growth-value accent-purple">78조원</div>
+            <div class="growth-label">AI 에이전트 시장 (2030)</div>
+            <div class="growth-sub">2025 약 11.4조원 → CAGR 46%</div>
+          </div>
+          <div class="growth-card" style="border-color: rgba(55,148,255,0.2);">
+            <div class="growth-value accent-blue">55.5조원</div>
+            <div class="growth-label">기업 GenAI 지출 (2025)</div>
+            <div class="growth-sub">3년간 22배 (2023 약 2.6조원)</div>
+          </div>
+          <div class="growth-card" style="border-color: rgba(78,201,176,0.2);">
+            <div class="growth-value accent-teal">40%</div>
+            <div class="growth-label">기업 앱 AI 에이전트 탑재</div>
+            <div class="growth-sub">Gartner · 2026년 말 (현재 5%)</div>
+          </div>
+          <div class="growth-card" style="border-color: rgba(206,145,120,0.2);">
+            <div class="growth-value accent-orange">130.5조원</div>
+            <div class="growth-label">Amazon AI·로봇 R&D (2024)</div>
+            <div class="growth-sub">단일 기업 최대 규모</div>
+          </div>
+        </div>
+        <p class="appear" style="font-size: 12px; margin-top: 12px; color: var(--text-secondary);">💱 기준: 1달러 = 1,500원</p>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 7: OPENCLAW ====== -->
+    <section class="slide slide--purple">
+      <div class="bg-glow" style="top: -100px; right: -100px; background: var(--vscode-yellow); opacity: 0.08;"></div>
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-purple appear"><span class="chapter-badge" style="background: rgba(197,134,192,0.2); color: var(--vscode-purple);">CH.1</span> OPENCLAW</p>
+        <h2 class="appear">OpenClaw의 <span class="accent-yellow">광폭행보</span></h2>
+        <p class="appear" style="font-size: 15px;">LLM에 컴퓨터를 통째로 연결 — WhatsApp으로 문자 보내면 컴퓨터가 실제로 작업 실행</p>
+        <div class="github-compare appear">
+          <p style="font-size: 14px; font-weight: 700; margin-bottom: 8px;">⭐ GitHub Stars 비교</p>
+          <div class="gh-row">
+            <div class="gh-name accent-yellow">OpenClaw</div>
+            <div class="gh-bar-wrap">
+              <div class="gh-bar" style="--target-width: 100%; background: linear-gradient(90deg, var(--vscode-yellow), #c4b570);">250,000+</div>
+            </div>
+            <div class="gh-time">60일</div>
+          </div>
+          <div class="gh-row">
+            <div class="gh-name" style="color: #61dafb;">React</div>
+            <div class="gh-bar-wrap">
+              <div class="gh-bar" style="--target-width: 90%; background: linear-gradient(90deg, #61dafb, #4fa8c4);">~230,000</div>
+            </div>
+            <div class="gh-time">10년+</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 8: PARADIGM SHIFT ====== -->
+    <section class="slide slide--purple">
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-purple appear"><span class="chapter-badge" style="background: rgba(197,134,192,0.2); color: var(--vscode-purple);">CH.1</span> PARADIGM</p>
+        <h2 class="appear">OpenClaw가 보여주는 <span class="accent-purple">패러다임 전환</span></h2>
+        <div class="paradigm-flow appear">
+          <div class="paradigm-row">
+            <div class="paradigm-label" style="background: rgba(255,255,255,0.08); color: var(--text-secondary);">기존</div>
+            <div class="flow-diagram" style="margin-top: 0;">
+              <div class="flow-box">사람</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-box">컴퓨터 (직접 조작)</div>
+            </div>
+          </div>
+          <div class="paradigm-down-arrow">↓</div>
+          <div class="paradigm-row">
+            <div class="paradigm-label" style="background: rgba(55,148,255,0.15); color: var(--vscode-blue-bright);">현재</div>
+            <div class="flow-diagram" style="margin-top: 0;">
+              <div class="flow-box">사람</div>
+              <div class="flow-arrow" style="color: var(--vscode-blue-bright);">→</div>
+              <div class="flow-box" style="border-color: rgba(55,148,255,0.3);">AI 에이전트</div>
+              <div class="flow-arrow" style="color: var(--vscode-blue-bright);">→</div>
+              <div class="flow-box">텍스트 응답</div>
+            </div>
+          </div>
+          <div class="paradigm-down-arrow" style="color: var(--vscode-teal);">↓</div>
+          <div class="paradigm-row">
+            <div class="paradigm-label" style="background: rgba(78,201,176,0.2); color: var(--vscode-teal);">미래</div>
+            <div class="flow-diagram" style="margin-top: 0;">
+              <div class="flow-box" style="border-color: rgba(78,201,176,0.4);">사람</div>
+              <div class="flow-arrow" style="color: var(--vscode-teal);">→</div>
+              <div class="flow-box" style="border-color: rgba(78,201,176,0.4); background: rgba(78,201,176,0.08);">AI 에이전트</div>
+              <div class="flow-arrow" style="color: var(--vscode-teal);">→</div>
+              <div class="flow-box" style="border-color: rgba(78,201,176,0.4);">실제 작업 수행</div>
+            </div>
+          </div>
+        </div>
+        <ul class="hlist appear" style="margin-top: 20px;">
+          <li>수면 중 GitHub PR 자동 제출</li>
+          <li>매일 6시 이메일 분류</li>
+          <li>커피 타임에 웹앱 빌드</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 9: AMAZON CASE STUDY ====== -->
+    <section class="slide slide--orange">
+      <div class="bg-glow" style="top: -80px; left: -80px; background: var(--vscode-orange);"></div>
+      <div class="bg-grid"></div>
+      <div class="slide-content wide">
+        <p class="tag tag-orange appear"><span class="chapter-badge" style="background: rgba(206,145,120,0.2); color: var(--vscode-orange);">CH.1</span> CASE STUDY</p>
+        <h2 class="appear">Amazon — <span class="accent-orange">유통의 AI 혁신</span></h2>
+        <div class="growth-cards appear">
+          <div class="growth-card" style="border-color: rgba(206,145,120,0.2);">
+            <div class="growth-value accent-orange">100만대+</div>
+            <div class="growth-label">전 세계 물류 센터 로봇</div>
+            <div class="growth-sub">2025년 중반 달성</div>
+          </div>
+          <div class="growth-card" style="border-color: rgba(206,145,120,0.2);">
+            <div class="growth-value accent-teal">2.4조원</div>
+            <div class="growth-label">AI 물류 연간 절감액</div>
+            <div class="growth-sub">$1.6B · 물류·운송 최적화</div>
+          </div>
+          <div class="growth-card" style="border-color: rgba(206,145,120,0.2);">
+            <div class="growth-value accent-blue">40%↑</div>
+            <div class="growth-label">주문 처리 속도 향상</div>
+            <div class="growth-sub">AI 창고 자동화</div>
+          </div>
+          <div class="growth-card" style="border-color: rgba(206,145,120,0.2);">
+            <div class="growth-value accent-purple">65%↑</div>
+            <div class="growth-label">동일·익일 배송 증가</div>
+            <div class="growth-sub">YoY · 2023 Q4</div>
+          </div>
+        </div>
+        <div class="emphasis-box appear" style="border-left-color: var(--vscode-orange); margin-top: 16px;">
+          <p style="font-size: 15px;">로봇에게 자연어로 지시: "<span class="accent-orange">왼쪽 노란 통에서 물건 집어서 회색 통에 넣어</span>"<br><span style="font-size: 13px; color: var(--text-secondary);">예전: 코드로 프로그래밍 → 지금: AI 에이전트가 자율 판단 실행</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 10: DHL CASE STUDY ====== -->
+    <section class="slide slide--orange">
+      <div class="bg-grid"></div>
+      <div class="slide-content wide">
+        <p class="tag tag-orange appear"><span class="chapter-badge" style="background: rgba(206,145,120,0.2); color: var(--vscode-orange);">CH.1</span> CASE STUDY</p>
+        <h2 class="appear">DHL — <span class="accent-orange">물류의 AI 혁신</span></h2>
+        <div class="bar-chart appear" style="height: 200px;">
+          <div class="bar-item">
+            <div class="bar-value">99.7%</div>
+            <div class="bar bar--orange" style="--target-height: 180px;"></div>
+            <div class="bar-label">주문 정확도</div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-value">40%↓</div>
+            <div class="bar bar--teal" style="--target-height: 130px;"></div>
+            <div class="bar-label">예측 오류 감소</div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-value">35%↑</div>
+            <div class="bar bar--blue" style="--target-height: 114px;"></div>
+            <div class="bar-label">창고 생산성</div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-value">25%↓</div>
+            <div class="bar bar--purple" style="--target-height: 81px;"></div>
+            <div class="bar-label">배송 시간</div>
+          </div>
+          <div class="bar-item">
+            <div class="bar-value">+15%</div>
+            <div class="bar bar--yellow" style="--target-height: 56px;"></div>
+            <div class="bar-label">정시 배송률</div>
+          </div>
+        </div>
+        <div class="cards appear" style="margin-top: 36px;">
+          <div class="card card--orange">
+            <div class="card-title accent-orange">DHL AI 투자: 1조 500억원+</div>
+            <p>AI 에이전트가 예약 스케줄링, 드라이버 후속 전화, 창고 협업 조율 자동 처리</p>
+          </div>
+          <div class="card card--teal">
+            <div class="card-title accent-teal">UPS 참고 (비교)</div>
+            <p>ORION: 연 1억 마일 절감, $400M(6,000억원) 절약</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 11: VBA INTRO ====== -->
+    <section class="slide slide--green">
+      <div class="bg-glow" style="top: -80px; right: -80px; background: var(--vscode-green);"></div>
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-green appear"><span class="chapter-badge" style="background: rgba(106,153,85,0.2); color: var(--vscode-green);">CH.2</span> VBA BASICS</p>
+        <h2 class="appear">VBA란 <span class="accent-green">무엇인가?</span></h2>
+        <p class="appear" style="font-size: 17px; color: var(--text-primary);">Microsoft 365 전 제품에 내장된 자동화 언어</p>
+        <p class="appear" style="font-size: 15px;">"엑셀에서 내가 손으로 하는 모든 작업을 기록하고 반복 실행하는 도구"</p>
+        <div class="cards appear" style="margin-top: 24px;">
+          <div class="card card--green">
+            <div class="card-title accent-green">왜 VBA인가?</div>
+            <p>✅ 추가 설치 없음 — 이미 Excel에 있음</p>
+            <p>✅ 회사 IT 정책 승인 불필요</p>
+            <p>✅ Excel, Word, PPT, Outlook 연동</p>
+            <p>✅ GPT가 코드를 전부 생성 가능</p>
+          </div>
+          <div class="card card--green">
+            <div class="card-title accent-teal">AI + VBA = ?</div>
+            <p style="font-size: 18px; color: #fff; font-weight: 700; margin-top: 16px; text-align: center;">코딩 몰라도<br><span class="accent-teal" style="font-size: 24px;">자동화 가능</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 12: VBA EXAMPLES ====== -->
+    <section class="slide slide--green">
+      <div class="bg-grid"></div>
+      <div class="slide-content wide">
+        <p class="tag tag-green appear"><span class="chapter-badge" style="background: rgba(106,153,85,0.2); color: var(--vscode-green);">CH.2</span> USE CASES</p>
+        <h2 class="appear">VBA로 자동화 가능한 <span class="accent-green">실무 작업 6가지</span></h2>
+        <div class="grid-3 appear">
+          <div class="card card--green" style="text-align: center;">
+            <div style="font-size: 28px; margin-bottom: 8px;">📊</div>
+            <div class="card-title accent-green">1. 정기 보고서</div>
+            <p>월말 매출 → 차트 → PDF</p>
+            <p style="color: var(--vscode-teal); font-weight: 700;">2시간 → 3분</p>
+          </div>
+          <div class="card card--green" style="text-align: center;">
+            <div style="font-size: 28px; margin-bottom: 8px;">📧</div>
+            <div class="card-title accent-green">2. 이메일 발송</div>
+            <p>마감 알림, 거래처 안내</p>
+            <p style="color: var(--vscode-teal); font-weight: 700;">반복 업무 제거</p>
+          </div>
+          <div class="card card--green" style="text-align: center;">
+            <div style="font-size: 28px; margin-bottom: 8px;">🧾</div>
+            <div class="card-title accent-green">3. 인보이스 음영 표기 자동화</div>
+            <p>양식 생성 → 파일명 저장</p>
+            <p style="color: var(--vscode-teal); font-weight: 700;">오류 최소화</p>
+          </div>
+          <div class="card card--green" style="text-align: center;">
+            <div style="font-size: 28px; margin-bottom: 8px;">🔄</div>
+            <div class="card-title accent-green">4. 데이터 정제</div>
+            <p>합치기 + 중복 제거</p>
+            <p style="color: var(--vscode-teal); font-weight: 700;">수작업 제거</p>
+          </div>
+          <div class="card card--green" style="text-align: center;">
+            <div style="font-size: 28px; margin-bottom: 8px;">✅</div>
+            <div class="card-title accent-green">5. 마감 체크리스트</div>
+            <p>조건부 서식 + 자동 알림</p>
+            <p style="color: var(--vscode-teal); font-weight: 700;">누락 방지</p>
+          </div>
+          <div class="card card--green" style="text-align: center;">
+            <div style="font-size: 28px; margin-bottom: 8px;">📑</div>
+            <div class="card-title accent-green">6. PPT/Word 업데이트</div>
+            <p>Excel 변경 → 자동 반영</p>
+            <p style="color: var(--vscode-teal); font-weight: 700;">이중 작업 제거</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 13: MODULAR APPROACH (❌ vs ✅) ====== -->
+    <section class="slide slide--green">
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-green appear"><span class="chapter-badge" style="background: rgba(106,153,85,0.2); color: var(--vscode-green);">CH.2</span> METHODOLOGY</p>
+        <h2 class="appear">모듈화 접근법 — <span class="accent-red">❌</span> vs <span class="accent-green">✅</span></h2>
+        <div class="cards appear">
+          <div class="card" style="border-color: rgba(244,71,71,0.3);">
+            <div class="card-title accent-red">❌ 잘못된 방법</div>
+            <p>"인보이스 전체 자동화 코드 만들어줘"</p>
+            <p>→ 수백 줄 복잡한 코드</p>
+            <p>→ 오류 → 어디가 문제인지 모름</p>
+            <p>→ 수정 불가 → 처음부터 다시</p>
+            <p style="color: var(--vscode-red); font-weight: 700; margin-top: 8px;">결과: 포기 😫</p>
+          </div>
+          <div class="card card--green">
+            <div class="card-title accent-green">✅ 올바른 방법 (모듈화)</div>
+            <p>업무를 단계별로 쪼갠다</p>
+            <p>→ 각 단계마다 짧은 코드 하나씩</p>
+            <p>→ 각 모듈 독립 테스트</p>
+            <p>→ 문제 모듈만 수정</p>
+            <p style="color: var(--vscode-teal); font-weight: 700; margin-top: 8px;">결과: 완성 🎉</p>
+          </div>
+        </div>
+        <div class="flow-diagram appear" style="margin-top: 20px;">
+          <div class="flow-box" style="background: rgba(106,153,85,0.15); border-color: rgba(106,153,85,0.4);">🔧 엔진<br><span style="font-size: 11px;">데이터 읽기</span></div>
+          <div class="flow-arrow" style="color: var(--vscode-green);">→</div>
+          <div class="flow-box" style="background: rgba(78,201,176,0.15); border-color: rgba(78,201,176,0.4);">⚙️ 변속기<br><span style="font-size: 11px;">날짜 정리</span></div>
+          <div class="flow-arrow" style="color: var(--vscode-teal);">→</div>
+          <div class="flow-box" style="background: rgba(55,148,255,0.15); border-color: rgba(55,148,255,0.4);">🚗 차체<br><span style="font-size: 11px;">결과 출력</span></div>
+          <div class="flow-arrow" style="color: var(--vscode-blue-bright);">→</div>
+          <div class="flow-box" style="background: rgba(220,220,170,0.15); border-color: rgba(220,220,170,0.4);">🏁 완성차<br><span style="font-size: 11px;">전체 자동화</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 14: STEP 1 — 업무 모듈화 ====== -->
+    <section class="slide slide--green">
+      <div class="bg-glow" style="bottom: -80px; right: -80px; background: var(--vscode-green);"></div>
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-green appear"><span class="chapter-badge" style="background: rgba(106,153,85,0.2); color: var(--vscode-green);">STEP 1/4</span></p>
+        <h2 class="appear">업무 모듈화 — <span class="accent-green">1. 업무를 단계별로 쪼개기</span></h2>
+        <p class="appear" style="font-size: 15px;">💡 "지금 내가 손으로 하는 작업을 순서대로 나열하면?"</p>
+        <div class="cards appear" style="margin-top: 16px;">
+          <div class="card">
+            <div class="card-title" style="color: var(--text-secondary);">현재 (손으로 하는 방식)</div>
+            <p>① 파일 열기 (거래처별 엑셀 5개)</p>
+            <p>② 이번 달 데이터 복사</p>
+            <p>③ 마스터 시트에 붙여넣기</p>
+            <p>④ 정렬 → ⑤ 합계 → ⑥ 날짜 통일</p>
+            <p>⑦ PDF 저장 → ⑧ 이메일 발송</p>
+            <p style="color: var(--vscode-red); margin-top: 8px; font-weight: 700;">소요: 약 2시간 · 매월 반복 · 실수 빈번</p>
+          </div>
+          <div class="card card--green">
+            <div class="card-title accent-green">모듈화 결과</div>
+            <p><span class="accent-green">모듈 A:</span> 파일 열기 + 데이터 읽기</p>
+            <p><span class="accent-teal">모듈 B:</span> 날짜 형식 통일</p>
+            <p><span class="accent-blue">모듈 C:</span> 마스터 시트 취합 + 정렬</p>
+            <p><span class="accent-purple">모듈 D:</span> 합계 계산</p>
+            <p><span class="accent-orange">모듈 E:</span> PDF 저장 + 이메일 발송</p>
+          </div>
+        </div>
+        <p class="appear" style="font-size: 13px; color: var(--vscode-yellow); margin-top: 12px;">💡 실전 팁: A4 한 장에 지금 하는 업무를 있는 그대로 적어보는 것이 시작!</p>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 15: STEP 2 — 단계별 GPT 요청 ====== -->
+    <section class="slide slide--green">
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-green appear"><span class="chapter-badge" style="background: rgba(78,201,176,0.2); color: var(--vscode-teal);">STEP 2/4</span></p>
+        <h2 class="appear">단계별 GPT 요청 — <span class="accent-teal">2. 한 번에 하나씩!</span></h2>
+        <p class="appear" style="font-size: 15px;">핵심: 전체 요청 <span class="accent-red">❌</span> → 모듈 하나씩 요청 <span class="accent-green">✅</span></p>
+        <div class="vba-code appear" style="background: #0d1b2a; border-color: rgba(78,201,176,0.2);">
+          <span class="comment">// 모듈 A 요청 예시 (GPT에게 보낼 프롬프트)</span><br><br>
+          <span class="string">너는 10년 경력의 엑셀 VBA 전문가야.</span><br><br>
+          다음 작업을 자동화하는 VBA 코드를 만들어줘:<br>
+          - C드라이브 <span class="string">"정산"</span> 폴더의 모든 .xlsx 파일을 열어<br>
+          - 각 파일 Sheet1의 A열(날짜), B열(거래처명), C열(금액) 읽어와<br>
+          - <span class="string">"취합"</span> 시트에 순서대로 붙여넣어줘<br><br>
+          <span class="keyword">조건:</span> 헤더 제외 / 마지막 행까지만 / <span class="func">한국어 주석</span> 달아줘
+        </div>
+        <p class="appear" style="font-size: 14px; margin-top: 12px; color: var(--vscode-teal);">💡 코드를 이해 못해도 OK — 실행해보고 잘 되면 다음 모듈로!</p>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 16: STEP 3 — 독립 테스트 ====== -->
+    <section class="slide slide--dark">
+      <div class="bg-glow" style="top: -80px; left: -80px; background: var(--vscode-blue);"></div>
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-blue appear"><span class="chapter-badge" style="background: rgba(55,148,255,0.2); color: var(--vscode-blue-bright);">STEP 3/4</span></p>
+        <h2 class="appear">3. 각 모듈 <span class="accent-blue">독립 테스트</span></h2>
+        <ul class="checklist appear">
+          <li><span class="check-icon">☐</span> <span>실제 파일 <strong style="color: #fff;">백업 완료</strong></span></li>
+          <li><span class="check-icon">☐</span> <span>테스트용 <strong style="color: #fff;">더미 데이터</strong> 준비 (5~10행)</span></li>
+          <li><span class="check-icon">☐</span> <span>파일명: <strong style="color: #fff;">TEST_원본파일명.xlsx</strong></span></li>
+          <li><span class="check-icon">☐</span> <span><strong style="color: #fff;">원본 파일은 절대 건드리지 않음</strong></span></li>
+        </ul>
+        <p class="appear" style="font-size: 14px; font-weight: 700; margin-top: 20px; color: #fff;">⚠️ 오류 발생 시 대처법</p>
+        <div class="error-flow appear">
+          <div class="error-flow-step">
+            <span style="color: var(--vscode-red);">🔴</span>
+            <span>VBA 실행 → 오류 발생 (예: "런타임 오류 1004")</span>
+          </div>
+          <div class="error-flow-arrow">▼</div>
+          <div class="error-flow-step">
+            <span>📋</span>
+            <span>오류 번호 + 메시지 <strong style="color: #fff;">그대로 복사</strong></span>
+          </div>
+          <div class="error-flow-arrow">▼</div>
+          <div class="error-flow-step">
+            <span>🤖</span>
+            <span>GPT에게 붙여넣기: "이 오류 원인과 수정 코드 알려줘"</span>
+          </div>
+          <div class="error-flow-arrow">▼</div>
+          <div class="error-flow-step">
+            <span style="color: var(--vscode-green);">✅</span>
+            <span>GPT가 <strong style="color: var(--vscode-teal);">즉시 원인 + 수정 코드 제공</strong></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 17: STEP 4 — 통합 완성 ====== -->
+    <section class="slide slide--dark">
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-blue appear"><span class="chapter-badge" style="background: rgba(220,220,170,0.2); color: var(--vscode-yellow);">STEP 4/4</span></p>
+        <h2 class="appear">4. 통합 VBA 코드 <span class="accent-yellow">완성</span></h2>
+        <div class="vba-code appear">
+          <span class="keyword">Sub</span> <span class="func">월간정산_전체자동화</span>()<br>
+          <span class="comment">&nbsp;&nbsp;' ===== 메인 실행 순서 =====</span><br><br>
+          &nbsp;&nbsp;<span class="keyword">Call</span> 모듈A_파일열기_데이터읽기 &nbsp;&nbsp;<span class="comment">' Step 1</span><br>
+          &nbsp;&nbsp;<span class="keyword">Call</span> 모듈B_날짜형식_통일 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">' Step 2</span><br>
+          &nbsp;&nbsp;<span class="keyword">Call</span> 모듈C_마스터시트_취합 &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">' Step 3</span><br>
+          &nbsp;&nbsp;<span class="keyword">Call</span> 모듈D_합계계산 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">' Step 4</span><br>
+          &nbsp;&nbsp;<span class="keyword">Call</span> 모듈E_PDF저장_이메일발송 &nbsp;<span class="comment">' Step 5</span><br><br>
+          &nbsp;&nbsp;<span class="func">MsgBox</span> <span class="string">"월간 정산 완료! "</span> & <span class="func">Now</span>()<br>
+          <span class="keyword">End Sub</span>
+        </div>
+        <table class="compare-table appear" style="margin-top: 20px;">
+          <thead>
+            <tr><th style="color: var(--text-secondary);">항목</th><th style="color: var(--text-secondary);">자동화 전</th><th style="color: var(--vscode-teal);">자동화 후</th></tr>
+          </thead>
+          <tbody>
+            <tr><td style="text-align: left; color: #fff;">소요 시간</td><td class="before">약 2시간</td><td class="after">약 3분</td></tr>
+            <tr><td style="text-align: left; color: #fff;">실수 가능성</td><td class="before">복붙 오류, 날짜 불일치</td><td class="after">거의 0%</td></tr>
+            <tr><td style="text-align: left; color: #fff;">반복</td><td class="before">매달 2시간</td><td class="after">버튼 한 번</td></tr>
+            <tr><td style="text-align: left; color: #fff;">야근</td><td class="before">월말 야근 발생</td><td class="after">퇴근 가능 🎉</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 18: PROMPT PRINCIPLES ====== -->
+    <section class="slide slide--green">
+      <div class="bg-glow" style="top: -80px; right: -80px; background: var(--vscode-green);"></div>
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-green appear"><span class="chapter-badge" style="background: rgba(106,153,85,0.2); color: var(--vscode-green);">CH.2</span> PROMPT</p>
+        <h2 class="appear">프롬프트 작성 <span class="accent-green">원칙 3가지</span></h2>
+        <div class="steps appear">
+          <div class="step" style="border-color: rgba(55,148,255,0.2);">
+            <div class="step-num" style="background: rgba(55,148,255,0.2); color: var(--vscode-blue-bright);">1</div>
+            <div class="step-content">
+              <div class="step-title accent-blue">역할을 부여하라</div>
+              <div class="step-desc">
+                <span style="color: var(--vscode-red);">❌</span> "VBA 코드 만들어줘"<br>
+                <span style="color: var(--vscode-green);">✅</span> "너는 10년 경력의 엑셀 VBA 전문가야. 다음 작업을 자동화하는 코드를 만들어줘."
+              </div>
+            </div>
+          </div>
+          <div class="step" style="border-color: rgba(78,201,176,0.2);">
+            <div class="step-num" style="background: rgba(78,201,176,0.2); color: var(--vscode-teal);">2</div>
+            <div class="step-content">
+              <div class="step-title accent-teal">맥락(Context)을 제공하라</div>
+              <div class="step-desc">
+                <span style="color: var(--vscode-red);">❌</span> "정산서 만들어줘"<br>
+                <span style="color: var(--vscode-green);">✅</span> "Sheet1의 A열에 날짜, B열에 거래처명, C열에 금액이 있어..."
+              </div>
+            </div>
+          </div>
+          <div class="step" style="border-color: rgba(197,134,192,0.2);">
+            <div class="step-num" style="background: rgba(197,134,192,0.2); color: var(--vscode-purple);">3</div>
+            <div class="step-content">
+              <div class="step-title accent-purple">출력 형식을 지정하라</div>
+              <div class="step-desc">
+                <span style="color: var(--vscode-red);">❌</span> "설명해줘"<br>
+                <span style="color: var(--vscode-green);">✅</span> "코드와 함께 각 줄이 무엇을 하는지 한국어 주석도 달아줘."
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="appear" style="font-size: 14px; margin-top: 16px; color: var(--vscode-yellow);">💡 프롬프트 = AI에 대한 업무 지시서(요건 정의서)</p>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 19: VBA TIPS ====== -->
+    <section class="slide slide--green">
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-green appear"><span class="chapter-badge" style="background: rgba(106,153,85,0.2); color: var(--vscode-green);">CH.2</span> TIPS</p>
+        <h2 class="appear">GPT+VBA 코딩 시 <span class="accent-green">유의사항 5가지</span></h2>
+        <ul class="checklist appear">
+          <li><span class="check-icon">①</span> <span><strong style="color: #fff;">테스트 데이터로 먼저 실행</strong> — 실제 데이터에 바로 적용하면 데이터 손실 위험</span></li>
+          <li><span class="check-icon">②</span> <span><strong style="color: #fff;">AI는 내 파일 구조를 모른다</strong> — 시트명, 열 위치, 범위를 반드시 명시</span></li>
+          <li><span class="check-icon">③</span> <span><strong style="color: #fff;">오류 메시지는 그대로 GPT에 붙여넣기</strong> — 즉시 원인과 수정 코드 제공</span></li>
+          <li><span class="check-icon">④</span> <span><strong style="color: #fff;">한 번에 너무 많이 요청하지 말 것</strong> — 짧은 모듈이 훨씬 안정적</span></li>
+          <li><span class="check-icon">⑤</span> <span><strong style="color: #fff;">코드를 이해하려는 노력</strong> — "이 코드가 무엇을 하는지 한줄씩 설명해줘" 습관화</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 20: FUTURE / 3 IMPLICATIONS ====== -->
+    <section class="slide slide--teal">
+      <div class="bg-glow" style="bottom: -80px; right: -80px; background: var(--vscode-teal);"></div>
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-teal appear"><span class="chapter-badge" style="background: rgba(78,201,176,0.2); color: var(--vscode-teal);">CH.3</span> FUTURE</p>
+        <h2 class="appear">업무 환경의 진화 & <span class="accent-teal">3가지 시사점</span></h2>
+        <div class="steps appear">
+          <div class="step" style="border-color: rgba(78,201,176,0.3);">
+            <div class="step-num" style="background: rgba(78,201,176,0.2); color: var(--vscode-teal);">1</div>
+            <div class="step-content">
+              <div class="step-title">아이디어만 있으면 누구나 만들 수 있다</div>
+              <div class="step-desc">에이전트 구축: <span class="accent-teal" style="font-weight: 700;">15~60분</span> · 비개발자가 1주일 만에 허가 자동화 툴 완성</div>
+            </div>
+          </div>
+          <div class="step" style="border-color: rgba(55,148,255,0.3);">
+            <div class="step-num" style="background: rgba(55,148,255,0.2); color: var(--vscode-blue-bright);">2</div>
+            <div class="step-content">
+              <div class="step-title">도메인 전문성이 새로운 경쟁력</div>
+              <div class="step-desc">예전: 기술을 가진 사람이 문제를 해결<br>지금: <span class="accent-blue" style="font-weight: 700;">문제를 가진 사람</span>이 기술을 쓰는 시대</div>
+            </div>
+          </div>
+          <div class="step" style="border-color: rgba(220,220,170,0.3);">
+            <div class="step-num" style="background: rgba(220,220,170,0.2); color: var(--vscode-yellow);">3</div>
+            <div class="step-content">
+              <div class="step-title">매일의 불편함을 기록</div>
+              <div class="step-desc">매일 반복하는 불편함 → <span class="accent-yellow" style="font-weight: 700;">다음 자동화의 출발점</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="emphasis-box appear" style="border-left-color: var(--vscode-teal); margin-top: 16px;">
+          <p style="font-size: 14px;">C.H. Robinson (글로벌 포워딩 기업): "미래에는 AI 에이전트에게 <span class="accent-teal">지침을 주고 컨텍스트를 관리</span>하는 일이 될 것"</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 21: EVOLUTION ====== -->
+    <section class="slide slide--teal">
+      <div class="bg-glow" style="top: -80px; left: -80px; background: var(--vscode-teal);"></div>
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-teal appear"><span class="chapter-badge" style="background: rgba(78,201,176,0.2); color: var(--vscode-teal);">CH.3</span> EVOLUTION</p>
+        <h2 class="appear">AI 활용 역량의 <span class="accent-teal">3단계 진화</span></h2>
+        <div class="evo-stages appear">
+          <div class="evo-stage" style="background: rgba(55,148,255,0.08); border-radius: 10px;">
+            <div class="evo-num" style="background: rgba(55,148,255,0.2); color: var(--vscode-blue-bright);">1</div>
+            <div>
+              <div class="evo-title accent-blue">프롬프트 엔지니어링</div>
+              <div class="evo-desc">"어떻게 질문할까?" — AI에게 잘 물어보는 기술</div>
+            </div>
+          </div>
+          <div class="evo-arrow-down" style="color: var(--vscode-blue-bright);">▼</div>
+          <div class="evo-stage" style="background: rgba(78,201,176,0.08); border-radius: 10px;">
+            <div class="evo-num" style="background: rgba(78,201,176,0.2); color: var(--vscode-teal);">2</div>
+            <div>
+              <div class="evo-title accent-teal">컨텍스트 엔지니어링</div>
+              <div class="evo-desc">"무엇을 알려줄까?" — AI에게 적절한 정보를 제공하는 기술</div>
+            </div>
+          </div>
+          <div class="evo-arrow-down" style="color: var(--vscode-teal);">▼</div>
+          <div class="evo-stage" style="background: rgba(197,134,192,0.08); border-radius: 10px;">
+            <div class="evo-num" style="background: rgba(197,134,192,0.2); color: var(--vscode-purple);">3</div>
+            <div>
+              <div class="evo-title accent-purple">에이전틱 엔지니어링</div>
+              <div class="evo-desc">"어떤 AI 팀을 어떻게 조율할까?" — 여러 에이전트를 설계하고 지휘</div>
+            </div>
+          </div>
+        </div>
+        <div class="emphasis-box appear" style="border-left-color: var(--vscode-purple); margin-top: 20px;">
+          <p style="font-size: 14px;">"컨텍스트 엔지니어링이란, 다음 단계를 위해 AI의 맥락을 딱 필요한 정보로만 채우는 섬세한 기술이다."</p>
+          <span style="font-size: 12px; color: var(--text-secondary); display: block; margin-top: 4px;">— Andrej Karpathy, OpenAI 공동창업자</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 22: ORCHESTRATOR ====== -->
+    <section class="slide slide--teal">
+      <div class="bg-grid"></div>
+      <div class="slide-content" style="align-items: center; text-align: center;">
+        <p class="tag tag-teal appear"><span class="chapter-badge" style="background: rgba(78,201,176,0.2); color: var(--vscode-teal);">CH.3</span> ORCHESTRATOR</p>
+        <h2 class="appear">오케스트레이터로의 <span class="accent-teal">전환</span></h2>
+        <div class="cards appear" style="text-align: left;">
+          <div class="card" style="text-align: center;">
+            <div style="font-size: 40px; margin-bottom: 8px;">🎻</div>
+            <div class="card-title" style="color: var(--text-secondary);">과거</div>
+            <p style="font-size: 16px; color: #fff;">혼자 바이올린을 연주</p>
+          </div>
+          <div class="card card--teal" style="text-align: center;">
+            <div style="font-size: 40px; margin-bottom: 8px;">🎼</div>
+            <div class="card-title accent-teal">현재</div>
+            <p style="font-size: 16px; color: #fff;">오케스트라 지휘자</p>
+          </div>
+        </div>
+        <div class="emphasis-box appear" style="border-left-color: var(--vscode-teal); margin-top: 24px; text-align: left;">
+          <p style="font-size: 15px;">"여러 AI 에이전트를 <span class="accent-teal">지휘하는 역할</span>로 변하고 있다"</p>
+          <p style="font-size: 13px; color: var(--text-secondary); margin-top: 8px;">
+            Salesforce: "Agentic Work Units" 새 직무 정의<br>
+            Morgan Stanley: "더 적은 인원으로 더 많은 성과"
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLIDE 23: CLOSING ====== -->
+    <section class="slide slide--title">
+      <div class="bg-glow" style="top: -100px; left: 50%; transform: translateX(-50%); background: var(--vscode-blue);"></div>
+      <div class="bg-glow" style="bottom: -100px; left: -100px; background: var(--vscode-purple);"></div>
+      <div class="bg-glow" style="bottom: -80px; right: -80px; background: var(--vscode-teal); opacity: 0.08;"></div>
+      <div class="bg-grid"></div>
+      <div class="slide-content">
+        <p class="tag tag-blue appear">WRAP UP</p>
+        <h2 class="appear" style="font-size: 28px;">핵심 메시지 <span class="accent-blue">3줄 요약</span></h2>
+        <div class="steps appear" style="text-align: left; margin-top: 20px;">
+          <div class="step" style="border-color: rgba(55,148,255,0.3);">
+            <div class="step-num" style="background: rgba(55,148,255,0.2); color: var(--vscode-blue-bright);">1</div>
+            <div class="step-content">
+              <div class="step-title">AI 에이전트 시대 — 코딩보다 <span class="accent-blue">문제 정의 능력</span>이 더 중요</div>
+            </div>
+          </div>
+          <div class="step" style="border-color: rgba(78,201,176,0.3);">
+            <div class="step-num" style="background: rgba(78,201,176,0.2); color: var(--vscode-teal);">2</div>
+            <div class="step-content">
+              <div class="step-title">당장 시작할 수 있는 것 — <span class="accent-teal">GPT + VBA</span>로 반복 업무를 자동화</div>
+            </div>
+          </div>
+          <div class="step" style="border-color: rgba(197,134,192,0.3);">
+            <div class="step-num" style="background: rgba(197,134,192,0.2); color: var(--vscode-purple);">3</div>
+            <div class="step-content">
+              <div class="step-title">앞으로 나아갈 방향 — <span class="accent-purple">AI 에이전트들의 오케스트레이터</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="appear" style="margin-top: 32px;">
+          <p style="font-size: 16px; color: var(--vscode-yellow);">📢 다음 세션 예고</p>
+          <p style="font-size: 15px; margin-top: 8px;">"프로그래밍 언어 없이, AI와의 대화만으로<br><span class="accent-blue" style="font-weight: 700;">실제 웹서비스</span>를 만들어 보겠습니다."</p>
+        </div>
+        <p class="appear" style="margin-top: 32px; font-size: 20px; font-weight: 700;">감사합니다 🙏</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="progress-bar"><div id="progress-fill"></div></div>
+  <div id="slide-counter"></div>
+
+  <script>
+  (() => {
+    const deck = document.getElementById('deck');
+    const slides = Array.from(deck.querySelectorAll('.slide'));
+    const total = slides.length;
+    let current = 0;
+    let isAnimating = false;
+    let suppressHash = false;
+
+    function updateUI() {
+      const pct = total > 1 ? (current / (total - 1)) * 100 : 100;
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('slide-counter').textContent = `${current + 1}\u2009/\u2009${total}`;
+    }
+
+    async function transition(from, to, dir) {
+      const dur = 450;
+      const ease = 'cubic-bezier(0.4, 0, 0.2, 1)';
+      to.classList.add('transitioning');
+      const outKF = [
+        { opacity: 1, transform: 'translateX(0)' },
+        { opacity: 0, transform: `translateX(${dir === 'next' ? '-6%' : '6%'})` }
+      ];
+      const inKF = [
+        { opacity: 0, transform: `translateX(${dir === 'next' ? '6%' : '-6%'})` },
+        { opacity: 1, transform: 'translateX(0)' }
+      ];
+      const a1 = from.animate(outKF, { duration: dur, easing: ease, fill: 'forwards' });
+      const a2 = to.animate(inKF, { duration: dur, easing: ease, fill: 'forwards' });
+      await Promise.all([a1.finished, a2.finished]);
+      a1.cancel(); a2.cancel();
+      from.classList.remove('active', 'transitioning');
+      to.classList.remove('transitioning');
+      to.classList.add('active');
+    }
+
+    async function goTo(index, dir) {
+      if (isAnimating) return;
+      if (index < 0 || index >= total || index === current) return;
+      isAnimating = true;
+      await transition(slides[current], slides[index], dir);
+      current = index;
+      updateUI();
+      syncHash();
+      updateCodeHighlight();
+      animateCounters();
+      isAnimating = false;
+    }
+    function next() { goTo(current + 1, 'next'); }
+    function prev() { goTo(current - 1, 'prev'); }
+
+    function syncHash() {
+      suppressHash = true;
+      history.replaceState(null, '', `#slide-${current + 1}`);
+    }
+    function parseHash() {
+      const m = location.hash.match(/^#(?:slide-)(\d+)$/);
+      if (!m) return null;
+      const n = parseInt(m[1], 10);
+      return (n >= 1 && n <= total) ? n - 1 : null;
+    }
+    window.addEventListener('hashchange', () => {
+      if (suppressHash) { suppressHash = false; return; }
+      const idx = parseHash();
+      if (idx !== null && idx !== current) goTo(idx, idx > current ? 'next' : 'prev');
+    });
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    document.addEventListener('keydown', e => {
+      const tag = e.target.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return;
+      switch (e.key) {
+        case 'ArrowRight': case 'ArrowDown': case ' ': case 'PageDown':
+          e.preventDefault(); next(); break;
+        case 'ArrowLeft': case 'ArrowUp': case 'PageUp':
+          e.preventDefault(); prev(); break;
+        case 'Home': e.preventDefault(); goTo(0, 'prev'); break;
+        case 'End': e.preventDefault(); goTo(total - 1, 'next'); break;
+        case 'f': case 'F': e.preventDefault(); toggleFullscreen(); break;
+        case 's': case 'S': toggleSpeakerNotes(); break;
+      }
+    });
+
+    let tx = 0, ty = 0, tt = 0;
+    deck.addEventListener('touchstart', e => {
+      const t = e.changedTouches[0];
+      tx = t.clientX; ty = t.clientY; tt = Date.now();
+    }, { passive: true });
+    deck.addEventListener('touchmove', e => {
+      const dx = Math.abs(e.changedTouches[0].clientX - tx);
+      const dy = Math.abs(e.changedTouches[0].clientY - ty);
+      if (dx > dy) e.preventDefault();
+    }, { passive: false });
+    deck.addEventListener('touchend', e => {
+      const t = e.changedTouches[0];
+      const dx = t.clientX - tx;
+      const dy = Math.abs(t.clientY - ty);
+      if (Math.abs(dx) >= 50 && dy <= 80 && Date.now() - tt <= 300) {
+        dx < 0 ? next() : prev();
+      }
+    });
+
+    function updateCodeHighlight() {
+      const activeSlide = slides[current];
+      const codeBlocks = activeSlide.querySelectorAll('pre[data-highlight-steps]');
+      codeBlocks.forEach(pre => {
+        const steps = JSON.parse(pre.dataset.highlightSteps);
+        if (!steps.length) return;
+        pre._highlightStep = 0;
+        applyHighlight(pre, steps[0]);
+      });
+    }
+    function applyHighlight(pre, rangeStr) {
+      const lines = pre.querySelectorAll('.code-line');
+      const ranges = rangeStr.split(',').map(r => {
+        const [a, b] = r.trim().split('-').map(Number);
+        return [a, b || a];
+      });
+      pre.classList.add('has-highlight');
+      lines.forEach((line, i) => {
+        const lineNum = i + 1;
+        const highlighted = ranges.some(([a, b]) => lineNum >= a && lineNum <= b);
+        line.classList.toggle('highlighted', highlighted);
+      });
+    }
+    document.addEventListener('click', e => {
+      const pre = e.target.closest('pre[data-highlight-steps]');
+      if (!pre) return;
+      const steps = JSON.parse(pre.dataset.highlightSteps);
+      if (!steps.length) return;
+      pre._highlightStep = ((pre._highlightStep || 0) + 1) % steps.length;
+      applyHighlight(pre, steps[pre._highlightStep]);
+    });
+
+    function animateCounters() {
+      const activeSlide = slides[current];
+      const counters = activeSlide.querySelectorAll('.count-up');
+      counters.forEach(el => {
+        const target = parseInt(el.dataset.target, 10);
+        if (!target || el._counted) return;
+        el._counted = true;
+        const duration = 1500;
+        const startTime = performance.now();
+        function update(now) {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const value = Math.round(eased * target);
+          if (target >= 1000000) {
+            el.textContent = (value / 10000).toFixed(0) + '만';
+          } else {
+            el.textContent = value.toLocaleString();
+          }
+          if (progress < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+      });
+    }
+
+    let notesWin = null;
+    function toggleSpeakerNotes() {
+      if (notesWin && !notesWin.closed) { notesWin.close(); notesWin = null; return; }
+      notesWin = window.open('', 'notes', 'width=500,height=400');
+      notesWin.document.write(`<!DOCTYPE html><html><head><title>Speaker Notes</title>
+        <style>body{font-family:'Noto Sans KR',system-ui,sans-serif;padding:24px;background:#1e1e1e;color:#fff;font-size:18px;line-height:1.6}
+        #timer{font-size:32px;color:#007ACC;margin-top:20px;font-variant-numeric:tabular-nums}
+        #info{color:#999;font-size:14px;margin-top:12px;border-top:1px solid #333;padding-top:8px}</style>
+      </head><body><div id="n"></div><div id="timer">00:00:00</div><div id="info"></div></body></html>`);
+      notesWin.document.close();
+      updateNotes();
+      const start = Date.now();
+      setInterval(() => {
+        if (!notesWin || notesWin.closed) return;
+        const e = Date.now() - start;
+        const h = String(Math.floor(e / 3600000)).padStart(2, '0');
+        const m = String(Math.floor((e % 3600000) / 60000)).padStart(2, '0');
+        const s = String(Math.floor((e % 60000) / 1000)).padStart(2, '0');
+        notesWin.document.getElementById('timer').textContent = `${h}:${m}:${s}`;
+      }, 1000);
+    }
+    function updateNotes() {
+      if (!notesWin || notesWin.closed) return;
+      const n = slides[current].querySelector('.speaker-notes');
+      notesWin.document.getElementById('n').innerHTML = n ? n.innerHTML : '<em style="color:#666">No notes</em>';
+      notesWin.document.getElementById('info').textContent = `Slide ${current + 1} / ${total}`;
+    }
+
+    function init() {
+      const idx = parseHash() ?? 0;
+      if (idx !== 0) {
+        slides[0].classList.remove('active');
+        slides[idx].classList.add('active');
+        current = idx;
+      }
+      updateUI();
+      updateCodeHighlight();
+      animateCounters();
+    }
+    window.addEventListener('DOMContentLoaded', init);
+    setInterval(() => updateNotes(), 500);
+    if (document.readyState !== 'loading') init();
+  })();
+  </script>
+</body>
+</html>
