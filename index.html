@@ -452,6 +452,38 @@
       .flow-diagram { flex-direction: column; }
       .flow-arrow { transform: rotate(90deg); }
     }
+
+    /* ── Source citation ── */
+    .slide-source {
+      position: absolute; bottom: 16px; left: 24px;
+      font-size: 10px; color: rgba(255,255,255,0.25);
+      font-family: 'Inter', sans-serif; z-index: 10;
+    }
+
+    /* ── Print / PDF Export ── */
+    @media print {
+      body { overflow: visible; background: #000; }
+      .presentation, #deck { position: static !important; overflow: visible !important; width: auto; height: auto; }
+      .slide {
+        display: flex !important;
+        position: relative !important;
+        width: 100vw; height: 100vh;
+        page-break-after: always;
+        break-after: page;
+        overflow: hidden;
+      }
+      .slide:last-child { page-break-after: avoid; break-after: avoid; }
+      .appear { opacity: 1 !important; transform: none !important; }
+      .bar { height: var(--target-height) !important; }
+      .h-bar-fill { width: var(--target-width) !important; }
+      .gh-bar { width: var(--target-width) !important; }
+      .donut-chart { --donut-reveal: 360deg !important; opacity: 1 !important;
+        -webkit-mask: none !important; mask: none !important; }
+      .donut-label { opacity: 1 !important; }
+      .highlight-anim { background-size: 100% 100% !important; }
+      #progress-bar, #slide-counter { display: none !important; }
+      .speaker-notes { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -841,9 +873,9 @@
         <div class="grid-3 appear">
           <div class="card card--green" style="text-align: center;">
             <div style="font-size: 28px; margin-bottom: 8px;">📊</div>
-            <div class="card-title accent-green">1. 정기 보고서</div>
+            <div class="card-title accent-green">1. 정기 보고자료</div>
             <p>월말 매출 → 차트 → PDF</p>
-            <p style="color: var(--vscode-teal); font-weight: 700;">2시간 → 3분</p>
+            <p style="color: var(--vscode-teal); font-weight: 700;">2시간 → 3분으로 단축</p>
           </div>
           <div class="card card--green" style="text-align: center;">
             <div style="font-size: 28px; margin-bottom: 8px;">📧</div>
@@ -1023,11 +1055,11 @@
         <div class="vba-code appear">
           <span class="keyword">Sub</span> <span class="func">월간정산_전체자동화</span>()<br>
           <span class="comment">&nbsp;&nbsp;' ===== 메인 실행 순서 =====</span><br><br>
-          &nbsp;&nbsp;<span class="keyword">Call</span> 모듈A_파일열기_데이터읽기 &nbsp;&nbsp;<span class="comment">' Step 1</span><br>
-          &nbsp;&nbsp;<span class="keyword">Call</span> 모듈B_날짜형식_통일 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">' Step 2</span><br>
-          &nbsp;&nbsp;<span class="keyword">Call</span> 모듈C_마스터시트_취합 &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">' Step 3</span><br>
-          &nbsp;&nbsp;<span class="keyword">Call</span> 모듈D_합계계산 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">' Step 4</span><br>
-          &nbsp;&nbsp;<span class="keyword">Call</span> 모듈E_PDF저장_이메일발송 &nbsp;<span class="comment">' Step 5</span><br><br>
+          <span style="display:inline-block;width:2ch;"></span><span class="keyword">Call</span> <span style="display:inline-block;min-width:26ch;">모듈A_파일열기_데이터읽기</span><span class="comment">' Step 1</span><br>
+          <span style="display:inline-block;width:2ch;"></span><span class="keyword">Call</span> <span style="display:inline-block;min-width:26ch;">모듈B_데이터 형식_통일</span><span class="comment">' Step 2</span><br>
+          <span style="display:inline-block;width:2ch;"></span><span class="keyword">Call</span> <span style="display:inline-block;min-width:26ch;">모듈C_마스터시트_취합</span><span class="comment">' Step 3</span><br>
+          <span style="display:inline-block;width:2ch;"></span><span class="keyword">Call</span> <span style="display:inline-block;min-width:26ch;">모듈D_합계계산</span><span class="comment">' Step 4</span><br>
+          <span style="display:inline-block;width:2ch;"></span><span class="keyword">Call</span> <span style="display:inline-block;min-width:26ch;">모듈E_PDF저장_이메일발송</span><span class="comment">' Step 5</span><br><br>
           &nbsp;&nbsp;<span class="func">MsgBox</span> <span class="string">"월간 정산 완료! "</span> & <span class="func">Now</span>()<br>
           <span class="keyword">End Sub</span>
         </div>
@@ -1036,10 +1068,8 @@
             <tr><th style="color: var(--text-secondary);">항목</th><th style="color: var(--text-secondary);">자동화 전</th><th style="color: var(--vscode-teal);">자동화 후</th></tr>
           </thead>
           <tbody>
-            <tr><td style="text-align: left; color: #fff;">소요 시간</td><td class="before">약 2시간</td><td class="after">약 3분</td></tr>
-            <tr><td style="text-align: left; color: #fff;">실수 가능성</td><td class="before">복붙 오류, 날짜 불일치</td><td class="after">거의 0%</td></tr>
-            <tr><td style="text-align: left; color: #fff;">반복</td><td class="before">매달 2시간</td><td class="after">버튼 한 번</td></tr>
-            <tr><td style="text-align: left; color: #fff;">야근</td><td class="before">월말 야근 발생</td><td class="after">퇴근 가능 🎉</td></tr>
+            <tr><td style="text-align: left; color: #fff;">속도</td><td class="before">약 2시간</td><td class="after">약 3분</td></tr>
+            <tr><td style="text-align: left; color: #fff;">정확도</td><td class="before">복붙 오류, 데이터 불일치</td><td class="after">거의 0%</td></tr>
           </tbody>
         </table>
       </div>
@@ -1236,7 +1266,7 @@
           <p style="font-size: 16px; color: var(--vscode-yellow);">📢 다음 세션 예고</p>
           <p style="font-size: 15px; margin-top: 8px;">"프로그래밍 언어 없이, AI와의 대화만으로<br><span class="accent-blue" style="font-weight: 700;">실제 웹서비스</span>를 함께 만들어 보겠습니다."</p>
         </div>
-        <p class="appear" style="margin-top: 32px; font-size: 20px; font-weight: 700;">경청해주셔서 감사합니다 🙏</p>
+        <p class="appear" style="margin-top: 32px; font-size: 20px; font-weight: 700;">감사합니다 🙏</p>
       </div>
     </section>
 
@@ -1332,6 +1362,7 @@
         case 'End': e.preventDefault(); goTo(total - 1, 'next'); break;
         case 'f': case 'F': e.preventDefault(); toggleFullscreen(); break;
         case 's': case 'S': toggleSpeakerNotes(); break;
+        case 'p': case 'P': e.preventDefault(); window.print(); break;
       }
     });
 
